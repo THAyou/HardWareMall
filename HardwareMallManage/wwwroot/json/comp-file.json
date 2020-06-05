@@ -1,0 +1,15 @@
+{
+  "msg": "查询成功",
+  "code": 200,
+  "data": [
+   {
+      "smUrl": "https://pic.qqtn.com/up/2018-9/15367146917869444.jpg",
+      "hasSm": true,
+      "name": "TIM图片20171018133340.png",
+      "updateTime": 1545815704000,
+      "type": "file",
+      "url": "https://pic.qqtn.com/up/2018-9/15367146917869444.jpg",
+      "isDir": false
+    }
+  ]
+}

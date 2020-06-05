@@ -1,0 +1,96 @@
+﻿
+@{
+    @using HardwareMall.Tool;
+    ViewData["Title"] = "OtherManageEdit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Id = ViewData["Id"] as string;
+}
+<!-- 加载动画 -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- 正文开始 -->
+<form class="layui-form" id="formAdvForm" lay-filter="formAdvForm">
+    <input name="Id" type="hidden" value="@Id" />
+
+    <div class="layui-fluid" style="padding-bottom: 75px;">
+        <div class="layui-card">
+            <div class="layui-card-header">内容信息</div>
+            <div class="layui-card-body">
+                <input name="type" type="hidden" />
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">标题:</label>
+                        <div class="layui-input-block">
+                            <input name="title" placeholder="请输入标题" class="layui-input"
+                                   lay-verType="tips" />
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md10">
+                        <label class="layui-form-label layui-form-required">内容:</label>
+                        <div class="layui-input-block">
+                            <textarea name="content" placeholder="请输入内容" cols="30" rows="10" class="layui-textarea"
+                                      lay-verType="tips" style="height:400px"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group-bottom text-right">
+        <button type="reset" class="layui-btn layui-btn-primary">&emsp;重置&emsp;</button>
+        <a class="layui-btn" lay-filter="formAdvSubmit" lay-submit>&emsp;保存&emsp;</a>
+    </div>
+
+</form>
+<script type="text/javascript">
+    layui.use(['admin','layer', 'form', 'table', 'laydate','upload'], function () {
+        var $ = layui.jquery;
+        var admin = layui.admin;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var upload = layui.upload;
+        var Id = $("[name=Id]").val();
+        var ImgServer="@StaticString.ImgServerUrl";
+
+        //页面加载
+        if (Id!="0") {
+            $.get('/api/WebManage/getOtherConfigInfo?Id=' + Id, {
+
+            }, function (data) {
+                    var Info = data.data;
+                    $("#TImg").attr("src", ImgServer + Info.imgSrc);
+                    form.val("formAdvForm", Info);
+            }, 'json');
+        };
+
+        /* 监听表单提交 */
+        form.on('submit(formAdvSubmit)', function (data) {
+            var FromData = data.field;
+            layer.confirm('确认要保存吗?', { btn: ['确定', '取消'] }
+                , function (index) {
+                    $.ajax({
+                        url: '/api/WebManage/saveOtherConfig',
+                        type: 'put',
+                        data: JSON.stringify(FromData),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.msg(res.message);
+                            if (res.success) {
+                                setTimeout("location.reload()", 1000);
+                            }
+                        }
+                    });
+                });
+        });
+
+    });
+</script>
+

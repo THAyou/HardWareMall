@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewData["Title"] = "Careers";
+    Layout = "~/Views/Shared/_ViewBodyLayOut.cshtml";
+    var Info = ViewData["Job"] as List<HardwareMall.Model.OtherDto>;
+}
+
+<div class="Crumbs">
+    <div class="container">
+        <p>Your location：<a href="/">Home</a>&gt;<a href="#">Jobs</a></p>
+    </div>
+</div>
+<div class="mainBox">
+    <div class="container clearfix">
+        <div class="mainL hidden-xs">
+            <ul>
+                <li><a href="/"><i class="iconfont">&#xe603;</i>Home</a></li>
+                <li><a href="/Product/ProductList"><i class="iconfont">&#xe64f;</i>Products</a></li>
+                <li><a href="/Home/Brand"><i class="iconfont">&#xe65a;</i>Brands</a></li>
+                <li><a href="/Home/Service"><i class="iconfont">&#xe607;</i>Service</a></li>
+                <li><a href="/Home/Company"><i class="iconfont">&#xe612;</i>Our Company</a></li>
+                <li class="active"><a href="/Home/Job"><i class="iconfont">&#xe645;</i>Careers</a></li>
+                <li><a href="/Home/Contact"><i class="iconfont">&#xe622;</i>Contact Us</a></li>
+                <li><a href="/Home/News"><i class="iconfont">&#xe610;</i>News</a></li>
+            </ul>
+        </div>
+        <div class="mainR">
+            <div class="jobBox">
+                @foreach (var m in Info)
+                {
+                    @Html.Raw(m.Content);
+                }
+            </div>
+        </div>
+    </div>
+</div>

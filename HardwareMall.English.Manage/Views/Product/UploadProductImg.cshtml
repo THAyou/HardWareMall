@@ -1,0 +1,89 @@
+﻿
+@{
+    @using HardwareMall.Tool;
+    ViewData["Title"] = "上传图片";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var ProductId = ViewData["ProductId"] as string;
+}
+<form class="layui-form model-form" id="approved-form">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-form-item layui-row">
+                <div class="layui-inline layui-col-md4">
+                    <input type="hidden" name="ProductId" value="@ProductId" />
+                    <label class="layui-form-label">上传图片：</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" name="attachment" />
+                        <button id="file-btn-upload" class="layui-btn layui-btn-sm layui-btn-normal icon-btn" type="button">
+                            <i class="layui-icon">&#xe681;</i>上传文件
+                        </button>
+                        <div class="fileMain">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-inline layui-col-md4">
+                    <div class="fileBox">
+                        <label class="layui-form-label">图片：</label>
+                        <input type="hidden" name="ProImgSrc" />
+                        <div class="imgBox" style="width:100px;height:100px">
+                            <img id="ProImg" class="tdImg" tb-img style="cursor: zoom-in" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item text-right">
+        <button class="layui-btn layui-btn-primary" type="button" ew-event="closePageDialog">取消</button>
+        <a class="layui-btn" name="Save">提交</a>
+    </div>
+</form>
+<script type="text/javascript">
+    layui.use(['layer', 'form', 'table', 'laydate', 'upload'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var upload = layui.upload;
+        var ProductId = $("[name=ProductId]").val();
+        $(document).off('click.tbImg').on('click.tbImg', '[tb-img]', function () {
+            layer.photos({ photos: { data: [{ src: $(this).attr('src') }] }, shade: .1, closeBtn: true });
+        });
+        upload.render({
+                elem: '#file-btn-upload',//绑定元素
+                url: '/api/UploadFiles/upLoadImg?Path=ProductImg', //必填项
+                method: 'POST',  //可选项。HTTP类型，默认post
+                accept: 'file',
+                done: function (res, index, upload) { //每个文件提交一次触发一次。详见“请求成功的回调”
+                    if (res.success) {
+                        var ImgServer="@StaticString.ImgServerUrl";
+                        $("#ProImg").attr("src", ImgServer + res.data);
+                        $("[name=ProImgSrc]").val(res.data);
+                    } 
+                }
+        });
+
+        $("[name=Save]").click(function () {
+            $.ajax({
+                url: '/api/Product/addProductImg',
+                type: 'post',
+                data: JSON.stringify({ ProductId: ProductId, Img: $("[name=ProImgSrc]").val() }),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (res) {
+                    if (res.success) {
+                        layer.msg(res.message, { icon: 1 });
+                        var index = parent.layer.getFrameIndex(window.name);
+                        setTimeout("parent.layer.close(" + index + ");parent.location.reload();", 1000);
+                    }
+                }
+            });
+        });
+
+    });
+
+</script>
+

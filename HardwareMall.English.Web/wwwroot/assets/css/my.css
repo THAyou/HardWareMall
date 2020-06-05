@@ -1,0 +1,200 @@
+.my-layui.btn-add{margin-top: 15px;}
+ .pro-list-top{margin-top: 5px !important;margin-left: 100px;}
+ .pro-list-top .layui-form-label{width: 100px;}
+ .pro-list-top .layui-input-block{margin-left: 125px;}
+ .pro-list-top .layui-form-label{padding: 5px 10px;font-weight: bold;}
+.pro-add-form .Record a{color: #FF0000;font-weight: bold;text-decoration: underline;}
+.pro-add-form .Record{padding-left: 50px;}
+ .pro-add-box .layui-input, .pro-add-box .layui-select,  .pro-add-box .layui-textarea{background: #f6f6f6;}
+.pro-add-box span{color: #999;}
+.searchBox{border: 1px #dedede solid;margin-top: 5px;padding:0 10px 20px;}
+.searchBox ul li{height: 30px;line-height: 30px;border-bottom: 1px #dedede solid;color: #666;}
+.searchBox ul li:nth-last-child(1){border: none;}
+.searchBox h3{font-size: 13px;font-weight: bold;margin: 10px 0;}
+.searchBox a.redBtn{color: #FF5722;display: inline-block;padding: 0px 10px;border-radius: 50px;border: 1px #FF5722 solid; }
+.searchBox a.redBtn:hover{background: #FF5722;color: #fff;}
+em{font-style: normal;}
+.imgBox{display: flex;align-items: center;justify-content: center;border: 1px #dedede solid;width: 100%;height: 100%;}
+.pro-add-form .jgsBox{padding:0 30px;height: 250px;}
+.pro-priceBox input{color: #FF0000;font-weight: bold;background: #f5f5f5;width: 100px;}
+.pro-priceBox label{width: auto;}
+.pro-priceBox .layui-input-block{margin-right: 20px;}
+.kong-btn,.kong-btn2,.kong-btn3{cursor: pointer;color: #FF5722;border: 1px #FF5722 solid;border-radius: 30px;font-size: 13px;padding: 0 7px;vertical-align: 5px;transition: all ease-in-out 0.3s;height: 24px;display: inline-block;line-height: 24px;}
+.kong-btn2{border: 1px #009F95 solid;color: #009F95;}
+.kong-btn3{border: 1px #08c solid;color: #08c;}
+.green-btn,.gray-btn{color: #fff;background: #009F95;border-radius: 30px;padding: 0 7px;vertical-align: 5px;height: 24px;display: inline-block;line-height: 24px;border: 1px #009F95 solid;transition: all ease-in-out 0.3s;}
+.gray-btn{background: #e8e8e8; border: 1px #e8e8e8 solid;color: #666;cursor: not-allowed;}
+.pro-record .layui-inline{width: 100%;}
+.kong-btn:hover{background: #FF5722;color: #fff;}
+.kong-btn2:hover{background: #009F95;color: #fff;}
+.kong-btn3:hover{background: #08c;color: #fff;}
+.green-btn:hover{color: #fff;background:#00ad9d;}
+.pro-record label{width: 90px;}
+.pro-record .layui-input-block{margin-left: 120px;}
+.pro-record input[type="text"]{border: none;}
+.pro-record input[type="text"]{border: none;}
+.pro-record .layui-input-block textarea{width: 63%;background: #f5f5f5;}
+.pro-comp-box{color: #333;margin-top: 30px;}
+.green-tit{background: #009688;color: #fff;display: inline-block;font-weight: bold;padding: 3px 10px;
+margin-left: -15px;border-radius: 0 30px 30px 0;margin-right: 10px;}
+a{cursor: pointer;}
+.pro-comp-box .comp-info{padding: 10px 0;}
+.pro-comp-box .comp-info p{clear: both;zoom: 1;line-height: 28px;}
+.pro-comp-box .comp-info p span{color: #666;width: 80px;display: inline-block;float: left;}
+.pro-comp-box .comp-info p em{color: #000;float: left;width: calc(100% - 80px);}
+.pro-comp-box .comp-info .lianxi-box{padding-left: 30px;}
+.pro-comp-box .comp-info .lianxi-box h3{font-weight: bold;margin-bottom: 15px;}
+.pro-comp-box .comp-info .lianxi-box .emailBox{border: 1px #ececec solid;background: #f9f9f9;margin-bottom: 15px;padding: 10px;}
+.comp-href{color: #FF5722;text-decoration: underline;font-weight: bold;}
+.comp-href:hover{color: #FF5722;}
+.pro-comp-box .comp-info .lianxi-box .emailBox h5{color: #999;padding-bottom: 2px;    border-bottom: 1px #ececec solid;margin-bottom: 3px;}
+.orangeBg{background: #FFF4E3;margin: -15px;padding: 15px;}
+.orangeBg .emailBox{background: #fff !important;}
+.more-comp-btn{text-align: center;padding: 15px 0;border-top: 1px #ececec solid;margin-top: 20px;}
+.comp-add-form .comp-add-box label{width: 120px;}
+.comp-add-form .comp-add-box .layui-input-block{margin-left: 150px;}
+.comp-detail-box .comp-top{margin-top: 5px;}
+.comp-detail-box .comp-top input{background: #f6f6f6;}
+.comp-detail-box .comp-top label{width: 90px;}
+.comp-detail-box .comp-top .layui-input-block{margin-left: 120px;}
+.comp-detail-box .comp-tab{margin-top: 20px;}
+.comp-tab-info .btn-add{margin-bottom: 20px;}
+.red{color: #FF0000;}
+.file-add-box{padding: 20px 15px;}
+.zsBox{width: 70px;padding: 3px;border: 1px #dedede solid;margin-top: 10px;margin-bottom: 10px;}
+.zsBox img{max-width: 100%;max-height: 100%;}
+.form-group-bottom {position: fixed;bottom: 0;left: 0;right: 0;background-color: #fff;padding: 10px 20px;box-shadow: 0 -1px 2px 0 rgba(0, 0, 0, .05);}
+.comp-tab-info .emailBox h5{color: #999;padding-bottom: 5px;border-bottom: 1px #ececec solid;margin-bottom: 5px;position: relative;}
+.comp-tab-info .emailBox{width: 70%;padding: 10px;border: 1px #ececec solid;background: #f9f9f9;margin: 10px 0;}
+.comp-tab-info .contactMarkBox textarea{padding: 10px;}
+.comp-tab-info .emailBox h5 a.kong-btn{position: absolute;top: -3px;right: 0;}
+.comp-tab-info .emailBox span{margin-right: 30px;}
+.comp-tab-info .emailBox span b{color: #444;font-weight: normal;}
+.comp-tab-info .emailBox p{text-align: right;margin-top: 10px;margin-right: -30px;}
+.adsHr{margin: 30px 0;}
+.no-comp{padding: 15px;}
+.no-comp h3{font-size: 14px;font-weight: bold;color: #333;}
+#tableBarFP a{font-size: 13px;color: #009688;}
+.layui-blue{color: #08c;font-size: 13px;display: inline-block;width: 100%;}
+.tableBarBus img{max-width: 20px;}
+.my-layui button{float: left;}
+.my-layui .layui-input-inline{margin-left: 10px;float: left;}
+.offerLi{display: flex;}
+.offerLi b{margin-right: 5px;}
+.offerLi li{margin-right: 20px;}
+.record-last .layui-input-block{width: 310px;}
+.record-last .layui-inline{margin-bottom: 10px;}
+.orange{color: #FF5722 !important;}
+.green{color: #009688!important;}
+.blue{color: #01AAED;}
+.statisticBox table{border-top: 1px #e6e6e6 solid;border-left:1px #e6e6e6 solid ;}
+.statisticBox table td{padding: 5px !important;background: #fff;}
+.statisticBox table th{color: #333;padding: 5px !important;background: #f5fbfa;font-weight: bold;}
+.statisticBox table{width: 200px;}
+.statisticBox table .layui-blue{margin-left: 5px;}
+.selectBox span{display: inline-block;width: 40px;line-height: 32px;text-align: center;}
+.selectBox .layui-form-select{width: calc(100% - 40px);display: inline-block;float: right;}
+.saleOrderBox .layui-input-inline{width: 110px !important;}
+.greenTag{background-color: #009688;display: inline-block;padding:0px 2px;color: #fff;line-height: 20px;}
+input[type='number']{display: block;width: 96%;padding-left: 10px;height: 30px;line-height: 1.3;line-height: 38px\9;border-width: 1px;border-style: solid;background-color: #fff;border-radius: 2px;border-color: #e6e6e6;}
+.fr{float: right;}
+.fl{float: left;}
+.dw input{border-left: none;}
+.statisticBox1 td{padding: 5px 8px;}
+.statisticBox1 td:nth-child(2n+1){background: #f5fbfa;padding: 5px 8px;}
+.statisticBox1 td:nth-child(2n){padding: 5px 8px;background: #fff;}
+.statisticBox1 table{border-top: 1px #e6e6e6 solid;border-left: 1px #e6e6e6 solid;}
+.chatMain{padding: 30px 20px;}
+.chatMain .chatBox dt{width:40px;height: 40px;border: 1px #dedede solid;float: left;margin-top: -5px;}
+.chatMain .chatBox dt img{width: 100%;}
+.chatMain .chatBox{margin-bottom: 20px;}
+.chatMain .chatBox .txt h3{font-size: 14px;font-weight: bold;margin-bottom: 10px;}
+.chatMain .chatBox .txt time{font-weight: normal;color: #888;float: right;}
+.chatMain .chatBox dd{padding-left: 20px;float: left;width: calc(100% - 80px);}
+.chatMain .chatBox.buyerBox h3{color: #06c;}
+.chatMain .chatBox p{ line-height: 20px;margin-top: 10px;padding: 5px ;}
+.chatMain .chatBox.buyerBox p{   border: 1px solid #c5e4ab;background: #f5fbf1;}
+.chatMain .chatBox.ourBox p{background: #f7f7f7;border: 1px solid #dedede;}
+.clearfix{*zoom:1;}
+.clearfix:before{content: ''; display: block;clear: both;}
+.clearfix:after{ content: ''; display: block;clear: both;}
+.chatMain form{margin-top: 50px;}
+.chatMain form button{margin-top: 10px;float: right;}
+.fileBox{display: flex;margin-top: 20px;position: relative;padding-bottom: 30px;max-width: 250px;float: left;margin-right: 20px;}
+.fileBox .imgBox{width: 40px;height: 40px;float: left;}
+.fileBox span{margin-left: 10px;min-width: 140px;display: inline-block;max-width: 200px;max-height: 40px;overflow:hidden;line-height: 20px;text-overflow: ellipsis;
+white-space: normal;}
+.fileBox img{max-width: 100%;}
+.fileBox button{position: absolute;left: 0;bottom: 0;}
+.contactMain{border: 1px #dedede solid;padding-bottom: 20px;margin-bottom: 20px;padding: 0 15px 20px;}
+.contactMain .layui-form-label{width: 50px;}
+.contactMain .layui-input-block{margin-left: 80px;}
+.contactMain .contactTit{margin-bottom: 15px;}
+.contactBtn{margin-top: 15px;}
+.mailBox ul{margin-bottom: 20px;}
+.mailBox ul li{float: left;margin-right: 10px;}
+.mailBox ul li a{display: inline-block;padding: 0px 30px;background: #f3f3f3;border-radius: 3px;height: 40px;line-height: 40px;}
+.mailBox ul li button{display: inline-block;padding: 8px 30px;background: #f3f3f3;border-radius: 3px;height: 40px;border: none;cursor: pointer;}
+.mailBox ul li a.active{background: #009688;color: #fff;}
+.mailTMain{padding: 15px;}
+ .mailTMain b{margin-right: 10px;}
+.mailTMain.grayTMain{background: #f3f3f3;}
+.mailTMain.greenTMain{background: #f5fbf1;}
+.mailTxt{margin: 30px 0;}
+.mainBox.emailBox span{display: inline-block;width: 100%;overflow: hidden;white-space: normal;line-height: 18px;} 
+span.emailIcon{display: inline-block;width: 16px;height:16px;}
+.emailMain p{line-height: 18px;}
+.emailMain .mainBox .layui-blue{display: initial;width: auto;}
+.emailMain .mainBox span,.emailMain .mainBox a{white-space: initial;word-break: break-all;}
+.emailMain .layui-table-cell{line-height: 18px;white-space: initial;word-break: break-all;}
+.fileMain2 .fileBox2{display: inline-block;margin-right:20px;float: left;}
+.fileMain2 .fileBox2 span{display: inline-block;background: url(../images/mail327a44.png) no-repeat -18px -83px;width: 7px;height: 12px;margin-right: 8px;}
+/* 2020-2-20 */
+.mainBox p{word-break: break-all;overflow: initial;line-height: 22px;white-space: initial;}
+.mainBox p .layui-blue{display: initial;}
+
+/* 2020-3-2 */
+.vipBox sup{vertical-align: 0px;margin-right: 3px;}
+.vipBox .layui-card-header{margin-bottom: 20px;}
+.color666{color: #666;margin: 8px 0;}
+.w50{width: 50%;display: inline-block;float: left;}
+
+/* 2020-3-3 */
+.projectBox ul li{border-bottom: 1px #eee dotted;}
+.projectBox ul{margin-bottom: 10px;border-bottom: 1px #dedede solid;padding-bottom: 10px;}
+.layui-blue1{color: #08c;font-size: 13px;text-decoration: underline;}
+.projectLi li{float: left;}
+.projectLi li a{padding: 7px 10px;border-radius: 3px;background: #eee;margin-right: 10px;}
+.projectLi li a.cur{background: #009688;color: #fff;}
+.proInput sup{vertical-align: 0;}
+.proInput .layui-row{margin-bottom: 10px;}
+
+
+		@media screen and (max-width: 1440px) {
+			.console-link-block .console-link-block-num{font-size: 30px !important;}
+			 .console-link-block-icon {width:60px;}
+		}
+        /** 小屏幕下样式 */
+        @media screen and (max-width: 992px) {
+            .console-link-block {
+                font-size: 14px;
+                padding: 15px 10px;
+            }
+
+            .console-link-block .console-link-block-num {
+                font-size: 28px;
+                margin-bottom: 0px;
+            }
+
+            .console-link-block .console-link-block-icon {
+                height: 45px;
+                right: 10px;
+            }
+
+            .console-link-block .console-link-block-band {
+                font-size: 12px;
+                right: -25px;
+                top: 8px;
+            }
+
+        }

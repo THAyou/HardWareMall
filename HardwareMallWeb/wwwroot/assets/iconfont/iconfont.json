@@ -1,0 +1,65 @@
+{
+  "id": "1556323",
+  "name": "买家采购后台",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "591044",
+      "name": "支付方式",
+      "font_class": "zhifufangshi",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "629366",
+      "name": "我的订单",
+      "font_class": "wodedingdan",
+      "unicode": "e655",
+      "unicode_decimal": 58965
+    },
+    {
+      "icon_id": "680959",
+      "name": "物流",
+      "font_class": "wuliu",
+      "unicode": "e70d",
+      "unicode_decimal": 59149
+    },
+    {
+      "icon_id": "1232428",
+      "name": "文档修改",
+      "font_class": "wendangxiugai",
+      "unicode": "e723",
+      "unicode_decimal": 59171
+    },
+    {
+      "icon_id": "1964727",
+      "name": "合同订单",
+      "font_class": "hetongdingdan",
+      "unicode": "e61c",
+      "unicode_decimal": 58908
+    },
+    {
+      "icon_id": "5975886",
+      "name": "完成",
+      "font_class": "wancheng",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "8300815",
+      "name": "审核",
+      "font_class": "shenhe",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "10030435",
+      "name": "ic_查找",
+      "font_class": "ic_chazhao",
+      "unicode": "e68c",
+      "unicode_decimal": 59020
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+﻿
+@{
+    ViewData["Title"] = "WebLog";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- 加载动画 -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">日志时间：</label>
+                        <div class="layui-input-inline mr0">
+                            <input id="createTime" name="createTime" class="layui-input" readonly="readonly" type="text" />
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">日志等级：</label>
+                        <div class="layui-input-inline mr0">
+                            <select name="logLevel" lay-search>
+                                <option value="">全部</option>
+                                <option value="Trace">Trace</option>
+                                <option value="Debug">Debug</option>
+                                <option value="Info">Info</option>
+                                <option value="Warn">Warn</option>
+                                <option value="Error">Error</option>
+                                <option value="Fatal">Fatal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn icon-btn" lay-filter="formSubSearchTbBas" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="layui-table" id="tableTbBas" lay-filter="tableTbBas"></table>
+        </div>
+    </div>
+</div>
+<!-- js部分 -->
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'dropdown','laydate'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var dropdown = layui.dropdown;
+        var laydate = layui.laydate;
+        form.render('select');
+        // 渲染表格
+        var insTb = table.render({
+            elem: '#tableTbBas',
+            url: '/api/System/getWebLog',
+            page: true,
+            cellMinWidth: 100,
+            cols: [[
+                {field: 'id', align: 'center', sort: true, title: 'Id'},
+                {field: 'logContent', align: 'center', sort: true, title: '日志内容'},
+                {field: 'logLevel', align: 'center', sort: true, title: '日志等级'},
+                {
+                    field: 'createTime', sort: true, align: 'center', title: '记录时间'
+                }
+            ]]
+        });
+
+        //监听工具条
+        table.on('tool(tableTbBas)', function (obj) {
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值
+        });
+
+        // 搜索按钮点击事件
+        form.on('submit(formSubSearchTbBas)', function (data) {
+            insTb.reload({where: data.field}, 'data');
+        });
+        //渲染时间控件
+        laydate.render({
+				elem: '#createTime',
+				range: true
+        });
+
+    });
+</script>

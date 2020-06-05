@@ -1,0 +1,82 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": 15,
+  "data": [
+    {
+      "userId": 1,
+      "username": "admin",
+      "password": "822f69df5fff8f8983e69a515744a9df",
+      "nickName": "普通用户",
+      "avatar": null,
+      "sex": "女",
+	  "conMum": "2019102302",
+	  "buyName":"杭州略诚网络科技有限公司",
+	  "country":"中国",
+	  "volume":"20KG",
+	  "createTime":"2019-10-20",
+	  "updateTime": "2019-11-20",
+	  "price":"$20/KG",
+	  "proAdmin":"杨明捷",
+      "email": null,
+      "emailVerified": null,
+      "trueName": null,
+      "idCard": null,
+      "birthday": null,
+      "departmentId": null,
+      "state": 0,
+      
+      "roles": [
+        {
+          "roleId": 1,
+          "roleName": "普通用户",
+          "comments": null,
+          "isDelete": null,
+          "createTime": null,
+          "updateTime": null
+        },
+        {
+          "roleId": 2,
+          "roleName": "普通用户",
+          "comments": null,
+          "isDelete": null,
+          "createTime": null,
+          "updateTime": null
+        }
+      ]
+    },
+    {
+      "userId": 2,
+      "username": "user01",
+      "password": "08b96cdc7dc85dc9e3511a991b6716f4",
+      "nickName": "用户一",
+      "avatar": null,
+      "sex": "女",
+      "conMum": "2019102302",
+      "buyName":"杭州略诚网络科技有限公司",
+      "country":"中国",
+      "volume":"20KG",
+      "createTime":"2019-10-20",
+      "updateTime": "2019-11-20",
+      "price":"$20/KG",
+      "proAdmin":"杨明捷",
+      "email": null,
+      "emailVerified": null,
+      "trueName": null,
+      "idCard": null,
+      "birthday": null,
+      "departmentId": null,
+      "state": 0,
+      "roles": [
+        {
+          "roleId": 2,
+          "roleName": "普通用户",
+          "comments": null,
+          "isDelete": null,
+          "createTime": null,
+          "updateTime": null
+        }
+      ]
+    }
+  ]
+}

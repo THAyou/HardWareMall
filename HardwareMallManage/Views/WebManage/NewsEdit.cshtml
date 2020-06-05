@@ -1,0 +1,132 @@
+﻿
+@{
+    @using HardwareMall.Tool;
+    @using HardwareMall.Tool.EnumHelper;
+    ViewData["Title"] = "新闻编辑";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Id = ViewData["NewsId"] as string;
+}
+
+<!-- 加载动画 -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- 正文开始 -->
+<form class="layui-form" id="formAdvForm" lay-filter="formAdvForm">
+    <input name="Id" type="hidden" value="@Id" />
+    <div class="layui-fluid" style="padding-bottom: 75px;">
+        <div class="layui-card">
+            <div class="layui-card-header">内容信息</div>
+            <div class="layui-card-body">
+                <input name="type" type="hidden" />
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">标题:</label>
+                        <div class="layui-input-block">
+                            <input name="newsTitle" placeholder="请输入标题" class="layui-input"
+                                   lay-verType="tips" />
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">选择类型:</label>
+                        <div class="layui-input-block">
+                            @Html.DropDownList("newsType", EnumExtend.GetSelectList(typeof(NewsType), "--请选择--", "0"))
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">发布时间:</label>
+                        <div class="layui-input-block">
+                            <input id="newsDataTime" name="newsDataTime" placeholder="请输入新闻发布时间" class="layui-input"
+                                   lay-verType="tips" readonly="readonly" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")" />
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md10">
+                        <label class="layui-form-label layui-form-required">内容:</label>
+                        <div class="layui-input-block">
+                            <textarea name="newsContent" placeholder="请输入内容" cols="30" rows="10" class="layui-textarea"
+                                      lay-verType="tips" style="height:500px"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group-bottom text-right">
+        <button type="reset" class="layui-btn layui-btn-primary">&emsp;重置&emsp;</button>
+        <a class="layui-btn" lay-filter="formAdvSubmit" lay-submit>&emsp;保存&emsp;</a>
+    </div>
+
+</form>
+<script type="text/javascript">
+    layui.use(['admin', 'layer', 'form', 'table', 'laydate', 'upload', 'CKEDITOR'], function () {
+        var $ = layui.jquery;
+        var admin = layui.admin;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var upload = layui.upload;
+        var CKEDITOR = layui.CKEDITOR;
+        var Id = $("[name=Id]").val();
+        CKEDITOR.replace('newsContent', { height: 480 });
+        var insEdt = CKEDITOR.instances.newsContent;
+        /* 渲染laydate */
+        laydate.render({
+            elem: '#newsDataTime',
+            trigger: 'click',
+            type: 'datetime'
+        });
+
+        //页面加载
+        if (Id != "0") {
+            $.ajax({
+                url: '/api/WebManage/getNewsInfo?Id=' + Id,
+                type: "get",
+                async: false,
+                success: function (data) {
+                    var Info = data.data;
+                    form.val("formAdvForm", Info);
+                }
+            });
+        };
+
+        /* 监听表单提交 */
+        form.on('submit(formAdvSubmit)', function (data) {
+            var Type = '';
+            if (Id == "0") {
+                Type = "1";
+            }
+            else {
+                Type = "0";
+            }
+            var FromData = data.field;
+            const content = insEdt.getData();
+            FromData = Object.assign(FromData, { newsContent: content });
+            layer.confirm('确认要保存吗?', { btn: ['确定', '取消'] }
+                , function (index) {
+                    $.ajax({
+                        url: '/api/WebManage/saveNews?Type=' + Type,
+                        type: 'put',
+                        data: JSON.stringify(FromData),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.msg(res.message);
+                            //如果新增成功就刷新页面
+                            if (data.field.Id == 0) {
+                                setTimeout("location.href='/WebManage/NewsEdit?NewsId=" + res.data + "'", 1000);
+                                return;
+                            }
+                            setTimeout("location.reload()", 1000);
+                        }
+                    });
+                });
+        });
+
+    });
+</script>
+

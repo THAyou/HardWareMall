@@ -1,0 +1,129 @@
+{
+	"code": 0,
+	"msg": "",
+	"count": 15,
+	"data": [{
+			"userId": 1,
+			"username": "admin",
+			"password": "822f69df5fff8f8983e69a515744a9df",
+			"nickName": "管理员",
+			"avatar": null,
+			"sex": "男",
+			"businessId": "187093 ",
+			"rubbish": "",
+			"IP": "../../assets/images/ip.png",
+			"cas": "591-27-5",
+			"productName": "test",
+			"seller": "杭州略诚有限公司",
+			"factoryPrice": "12",
+			"lastPrice": "13",
+			"payType": "30% advance payment/deposit by T/T, and 70% paid before shipment",
+			"transport": "by express",
+			"package": "25KG",
+			"delivery": "one week",
+			"createTime": "2019/03/29 16:38:03",
+			"Reason": "审核最终的说明信息",
+			"roles": [{
+					"roleId": 1,
+					"roleName": "管理员",
+					"comments": null,
+					"isDelete": null,
+					"createTime": null,
+					"updateTime": null
+				},
+				{
+					"roleId": 2,
+					"roleName": "普通用户",
+					"comments": null,
+					"isDelete": null,
+					"createTime": null,
+					"updateTime": null
+				}
+			]
+		},
+
+		{
+			"userId": 2,
+			"username": "admin",
+			"password": "822f69df5fff8f8983e69a515744a9df",
+			"nickName": "管理员",
+			"avatar": null,
+			"sex": "男",
+			"businessId": "187093 ",
+			"rubbish": "",
+			"IP": "../../assets/images/ip.png",
+			"cas": "591-27-5",
+			"productName": "test",
+			"seller": "杭州略诚有限公司",
+			"sellerWeb": "www.kaixin.com",
+			"sellerType": "贸易商",
+			"email": "17285858@qq.com",
+			"factoryPrice": "12",
+			"lastPrice": "13",
+			"payType": "30% advance payment/deposit by T/T, and 70% paid before shipment",
+			"transport": "by express",
+			"package": "25KG",
+			"delivery": "one week",
+			"createTime": "2019/03/29 16:38:03",
+			"Reason": "审核最终的说明信息",
+			"roles": [{
+					"roleId": 1,
+					"roleName": "管理员",
+					"comments": null,
+					"isDelete": null,
+					"createTime": null,
+					"updateTime": null
+				},
+				{
+					"roleId": 2,
+					"roleName": "普通用户",
+					"comments": null,
+					"isDelete": null,
+					"createTime": null,
+					"updateTime": null
+				}
+			]
+		},
+
+		{
+			"userId": 3,
+			"username": "admin",
+			"password": "822f69df5fff8f8983e69a515744a9df",
+			"nickName": "管理员",
+			"avatar": null,
+			"sex": "男",
+			"businessId": "187093 ",
+			"rubbish": "",
+			"IP": "../../assets/images/ip.png",
+			"cas": "591-27-5",
+			"productName": "test",
+			"seller": "杭州略诚有限公司",
+			"factoryPrice": "12",
+			"lastPrice": "13",
+			"payType": "30% advance payment/deposit by T/T, and 70% paid before shipment",
+			"transport": "by express",
+			"package": "25KG",
+			"delivery": "one week",
+			"createTime": "2019/03/29 16:38:03",
+			"Reason": "审核最终的说明信息",
+			"roles": [{
+					"roleId": 1,
+					"roleName": "管理员",
+					"comments": null,
+					"isDelete": null,
+					"createTime": null,
+					"updateTime": null
+				},
+				{
+					"roleId": 2,
+					"roleName": "普通用户",
+					"comments": null,
+					"isDelete": null,
+					"createTime": null,
+					"updateTime": null
+				}
+			]
+		}
+
+	]
+}

@@ -1,0 +1,250 @@
+﻿
+@{
+    ViewData["Title"] = "菜单管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">搜索：</label>
+                        <div class="layui-input-inline mr0">
+                            <input id="edtSearchAuth" class="layui-input" type="text" placeholder="输入关键字" />
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button id="btnSearchAuth" class="layui-btn icon-btn">
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <button id="btnAddAuth" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+                        <button id="btnExpandAuth" class="layui-btn icon-btn">全部展开</button>
+                    </div>
+                    <div class="layui-inline">
+                        <button id="btnFoldAuth" class="layui-btn icon-btn">全部折叠</button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="layui-table" id="tableAuth" lay-filter="tableAuth"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="tableBarAuth">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<!-- 表单弹窗 -->
+<script type="text/html" id="modelAuth">
+    <form id="modelAuthForm" lay-filter="modelAuthForm" class="layui-form model-form">
+        <input type="hidden" name="id" />
+        <div class="layui-form-item">
+            <label class="layui-form-label">父节点</label>
+            <div class="layui-input-block">
+                <div id="parentId" class="layui-form-select select-tree">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单名称:</label>
+            <div class="layui-input-block">
+                <input name="menuName" placeholder="请输入菜单名称" type="text" class="layui-input" maxlength="50"
+                       lay-verType="tips" lay-verify="required" required />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单地址:</label>
+            <div class="layui-input-block">
+                <input name="menuUrl" placeholder="请输入菜单名称" type="text" class="layui-input"
+                       lay-verType="tips" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单样式:</label>
+            <div class="layui-input-block">
+                <input name="styleClass" placeholder="请输入菜单名称" type="text" class="layui-input"
+                       lay-verType="tips" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input name="sort" placeholder="请输入排序" type="number" class="layui-input" min="0" max="1000"
+                       lay-verType="tips" lay-verify="required|number" required value="999" />
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closePageDialog">取消</button>
+            <button class="layui-btn" lay-filter="modelSubmitAuth" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+
+<script>
+    var apiUrl = '/api/System/getMenuList';
+    layui.use(['layer', 'form', 'table', 'admin', 'treetable','zTree','treeSelect'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var admin = layui.admin;
+        var treetable = layui.treetable;
+        var treeselect=layui.treeSelect;
+        // 渲染表格
+        function renderTable() {
+            treetable.render({
+                treeColIndex: 1,
+                treeSpid: 0,
+                treeIdName: 'id',
+                treePidName: 'parentId',
+                elem: '#tableAuth',
+                url: apiUrl,
+                cellMinWidth: 100,
+                page: false,
+                cols: [[
+                    {type: 'numbers', title: '#'},
+                    {field: 'menuName', title: '菜单名称', minWidth: 200},
+                    {field: 'menuUrl', title: '菜单地址'},
+                    {templet: '#tableBarAuth', title: '操作', align: 'center', minWidth: 120}
+                ]]
+            });
+        }
+
+        renderTable();
+
+        // 添加按钮点击事件
+        $('#btnAddAuth').click(function () {
+            showEditModel();
+        });
+
+        // 工具条点击事件
+        table.on('tool(tableAuth)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            if (layEvent === 'edit') { // 修改
+                showEditModel(data);
+            } else if (layEvent === 'del') { // 删除
+                doDel(obj);
+            }
+        });
+
+       // 删除
+        function doDel(obj) {
+            layer.confirm('确定要删除“' + obj.data.menuName + '”吗？', {
+                skin: 'layui-layer-admin',
+                shade: .1
+            }, function (i) {
+                layer.close(i);
+                layer.load(2);
+                    $.ajax({
+                        url: '/api/System/delMenu',
+                        type: "DELETE",
+                        data: JSON.stringify({ Id: obj.data.id }),
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.closeAll('loading');
+                            if (res.success) {
+                                layer.msg(res.message, { icon: 1 });
+                                renderTable();
+                            } else {
+                                layer.msg(res.message, { icon: 2 });
+                            }
+                        }
+                    });
+            });
+        }
+
+        // 显示表单弹窗
+        function showEditModel(mAuth) {
+            admin.open({
+                type: 1,
+                title: (mAuth ? '修改' : '添加') + '菜单',
+                content: $('#modelAuth').html(),
+                success: function (layero, dIndex) {
+                    var zNodes;
+                    //treeselect 赋值
+                    $.ajaxSettings.async = false;
+                    $.get('/api/System/getMenuEdit', function (res) {
+                        //console.log(res);
+                        zNodes = res.data;
+                    }, 'json');
+                    var type = '';
+                    if (mAuth != null) {
+                        type = '0';
+                    }
+                    else  {
+                        type = '1';
+                    }
+                    treeselect.initSelectTree("parentId", zNodes, false, mAuth != null ? mAuth.parentId : 0);
+                    form.val('modelAuthForm', mAuth);  // 回显数据
+
+                    // 表单提交事件
+                    form.on('submit(modelSubmitAuth)', function (data) {
+                        $.ajax({
+                            url: '/api/System/saveMenu?Type='+type,
+                            type: 'Post',
+                            contentType: "application/json;charset=utf-8",
+                            data: JSON.stringify(data.field),
+                            dataType: "json",
+                            success: function (res) {
+                                if (res.success) {
+                                    layer.msg(res.message, { icon: 1 });
+                                    renderTable();
+                                } else {
+                                    layer.msg(res.message, { icon: 2 });
+                                }
+                                layer.close(dIndex);
+                                layer.closeAll('loading');
+                            }
+                          });
+                        return false;
+                    });
+                }
+            });
+        }
+
+        // 搜索按钮点击事件
+        $('#btnSearchAuth').click(function () {
+            $('#edtSearchAuth').removeClass('layui-form-danger');
+            var keyword = $('#edtSearchAuth').val();
+            var $tds = $('#tableAuth').next('.treeTable').find('.layui-table-body tbody tr td');
+            $tds.css('background-color', 'transparent');
+            if (!keyword) {
+                layer.tips('请输入关键字', '#edtSearchAuth', {tips: [1, '#ff4c4c']});
+                $('#edtSearchAuth').addClass('layui-form-danger');
+                $('#edtSearchAuth').focus();
+                return;
+            }
+            var searchCount = 0;
+            $tds.each(function () {
+                if ($(this).text().indexOf(keyword) >= 0) {
+                    $(this).css('background-color', '#FAE6A0');
+                    if (searchCount == 0) {
+                        $('body,html').stop(true);
+                        $('body,html').animate({scrollTop: $(this).offset().top - 150}, 500);
+                    }
+                    searchCount++;
+                }
+            });
+            if (searchCount == 0) {
+                layer.msg("没有匹配结果", {icon: 5, anim: 6});
+            } else {
+                treetable.expandAll('#tableAuth');
+            }
+        });
+
+        $('#btnExpandAuth').click(function () {
+            treetable.expandAll('#tableAuth');
+        });
+
+        $('#btnFoldAuth').click(function () {
+            treetable.foldAll('#tableAuth');
+        });
+
+    });
+</script>

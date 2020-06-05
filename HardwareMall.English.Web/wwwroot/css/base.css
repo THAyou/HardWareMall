@@ -1,0 +1,40 @@
+*, *:before, *:after { -webkit-tap-highlight-color: rgba(0, 0, 0, 0);box-sizing: border-box; max-height: 100000px;}
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th,textarea, td {
+  border: 0 none; color: inherit;margin: 0;padding: 0;vertical-align: baseline;}
+.textarea{	display: table;}
+*{box-sizing: -moz-box-sizing: border-box; -webkit-box-sizing: border-box; 
+     -o-box-sizing: border-box; -ms-box-sizing: border-box; box-sizing: border-box; }
+h1, h2, h3, h4, h5, h6 ,em, strong {font-weight: normal;}
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,em,img,small,strong,b,u,i,ul,li,ol,dl,dt,dd,form,select,label,table,caption,tbody,tfoot,thead,tr,th,td{padding:0;border:0;outline:0;margin: 0;}
+address,cite,dfn,em,var,i{font-style:normal; }
+ul, ol, li {list-style: none;}
+a{text-decoration:none !important;outline:none;}
+input{border:1px solid #999;outline:none;}
+textarea{outline:none;}
+table{cellspacing:0px;cellpadding:0px;}
+img{border:none;vertical-align: middle;}
+a,img{border:0;}
+.clearfix{*zoom:1;}
+.clearfix:before{content: ''; display: block;clear: both;}
+.clearfix:after{ content: ''; display: block;clear: both;}
+ .fl{float: left;}
+  .fr{float: right;}
+ button{padding:0;outline:0;border:none; cursor: pointer;}
+input{outline:0; border: none;padding: 0;margin: 0;}
+input[type=text]{outline:0}
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {color: #999;}
+input:-moz-placeholder, textarea:-moz-placeholder {color:#999;}
+input::-moz-placeholder, textarea::-moz-placeholder {color:#999;}
+input:-ms-input-placeholder, textarea:-ms-input-placeholder {color:#999;}
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {color: #999; font-size: 14px;}
+input::-moz-placeholder, textarea::-moz-placeholder {color:#999; font-size: 14px;}
+input::-moz-placeholder, textarea::-moz-placeholder {color:#999; font-size: 14px;}
+input::-ms-input-placeholder, textarea::-ms-input-placeholder {color:#999; font-size: 14px;}
+textarea{resize:none;outline:0} 
+input, button, textarea {-webkit-appearance: none; outline: none;}
+input[type="checkbox"]{border: 1px #CDCDCD solid;width: 16px;height: 16px;position: relative;}
+input[type="checkbox"]:focus{outline: none;}
+input[type="checkbox"]:checked{border: 1px #B71314 solid;padding: 3px;text-align: center;}
+input[type="checkbox"]:checked:before{content: "\e604";position: absolute;top: 1px;left: 1px;font-family: iconfont;font-size: 12px;color: #B71314;}
+.btn:focus,.btn:active:focus,.btn.active:focus,.btn.focus,.btn:active.focus,.btn.active.focus {outline: none;box-shadow:none;}
+.th_chk input{margin-right: 5px;vertical-align: -3px;}

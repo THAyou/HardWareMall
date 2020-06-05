@@ -1,0 +1,365 @@
+﻿
+@{
+    ViewData["Title"] = "产品列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <div id="ProductType" class="layui-form-select select-tree">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input name="BillNo" class="layui-input" type="text" placeholder="请输入订货号" />
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input name="ProductName" class="layui-input" type="text" placeholder="请输入产品名称" />
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <button class="layui-btn icon-btn" lay-filter="formSubSearchProducts" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>
+                        </button>
+                        <a class="layui-btn icon-btn" name="AddProduct">添加产品</a>
+                    </div>
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-radius layui-btn-normal" name="ReleaseAll">上架所有产品</a>
+                        <a class="layui-btn layui-btn-radius layui-btn-danger" name="TakeOffAll">下架所有产品</a>
+                    </div>
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-radius layui-btn-normal" name="ReleaseSelect">上架选择产品</a>
+                        <a class="layui-btn layui-btn-radius layui-btn-danger" name="TakeOffSelect">下架选择产品</a>
+                    </div>
+                </div>
+            </div>
+            <table class="layui-table" id="tableProducts" lay-filter="tableProducts"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="tbBasicTbBar">
+    <a href="javascript:;" lay-event="re" class="kong-btn">推荐</a>
+    <a href="javascript:;" lay-event="proType" class="kong-btn">产品分类</a>
+    <a href="javascript:;" lay-event="edit" class="kong-btn3">产品详情</a>
+    <a href="javascript:;" lay-event="del" class="kong-btn2">删除</a>
+</script>
+<script>
+    layui.use(['admin','layer', 'form', 'table','zTree', 'treeSelect'], function () {
+        var $ = layui.jquery;
+        var admin = layui.admin;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var treeSelect = layui.treeSelect; 
+        var zTree = layui.zTree;
+        form.render('select');
+        //获取产品类型下拉框
+        $.get('/api/Product/getProductTypeSelectTree', {}, function (res) {
+            treeSelect.initSelectTreeV("ProductType", res.data, false, 0, false, "产品分类");
+        }, 'json');
+
+
+        // 渲染表格
+        var insTb = table.render({
+            elem: '#tableProducts',
+            url: '/api/Product/getProductList',
+            page: true,
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                { field: 'id', align: 'center', width: '10%', sort: true, title: '产品Id' },
+                { field: 'billNo', align: 'center', width: '10%', sort: true, title: '订货号' },
+                { field: 'productName', align: 'center',width: '15%', sort: true, title: '产品名称' },
+                {
+                    field: 'release', align: 'center', sort: true, title: '是否上架', templet: function (d) {
+                        if (d.release) {
+                            return "是";
+                        }
+                        else {
+                            return "否";
+                        }
+                    }
+                },
+                { field: 'modelNo', align: 'center', width: '10%', sort: true, title: '产品型号' },
+                {
+                    field: 'titlePrice', align: 'center', width: '12%', sort: true, title: '列表展示价格', templet: function (d)
+                    {
+                        return d.priceType + d.titlePrice;
+                    }
+                },
+                { field: 'reserve', align: 'center', sort: true, title: '库存' },
+                {title: '操作', toolbar: '#tbBasicTbBar', align: 'center', fixed: 'right', minWidth: 250}
+            ]]
+        });
+        // 搜索
+        form.on('submit(formSubSearchProducts)', function (data) {
+            insTb.reload({
+                where: data.field, page: {
+                    curr: 1
+                }
+            }, 'data');
+        });
+
+        table.on('sort(tableProducts)', function (obj) {
+            //console.log(obj);
+            table.reload('tableProducts', {
+                initSort: obj, where: {
+                    ordrfield: obj.field //排序字段
+                    , ordertype: obj.type //排序方式
+                }});
+        });
+
+        //监听工具条
+        table.on('tool(tableProducts)', function (obj) {
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'edit') { //删除
+                var height = $(document.body).height();
+                var width = $(document.body).width();
+                width = width - 80;
+                var check = layer.open({
+                    type: 2,
+                    title: '产品详情',
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area: [width+'px', '580px'],
+                    content: '/Product/ProductDetails?ProductId=' + data.id,
+                });
+                layer.full(check);
+            }
+            if (layEvent == 'del') {
+                layer.confirm('确认要删除吗?', { btn: ['确定', '取消'] }
+                    , function (index) {
+                        $.ajax({
+                            url: '/api/Product/delProduct',
+                            type: 'delete',
+                            data: JSON.stringify({id:data.id}),
+                            contentType: "application/json",
+                            dataType: "json",
+                            success: function (res) {
+                                layer.msg(res.message);
+                                if (res.success) {
+                                    setTimeout("location.reload()", 1000);
+                                }
+                            }
+                        });
+                    });
+            }
+            if (layEvent == 'proType') {
+                showPermModel(data.id);
+            }
+            if (layEvent == 're') {
+                Re(data.id);
+            }
+        });
+
+        function Re(ProductId) {
+            admin.open({
+                title: '商品推荐设置',
+                btn: ['保存', '取消'],
+                content: '<ul id="treeAuth" class="ztree"></ul>',
+                success: function (layero, index) {
+                    $(layero).children('.layui-layer-content').css({ 'max-height': '300px', 'overflow': 'auto' });
+                    layer.load(2);
+                    var setting = { check: { enable: true }, data: { simpleData: { enable: true } } };
+                    $.get('/api/Product/getProductRetree', {
+                        ProductId: ProductId
+                    }, function (res) {
+                        $.fn.zTree.init($('#treeAuth'), setting, res.data);
+                        layer.closeAll('loading');
+                    }, 'json');
+                },
+                yes: function (index) {
+                    layer.load(2);
+                    var treeObj = $.fn.zTree.getZTreeObj('treeAuth');
+                    var nodes = treeObj.getCheckedNodes(true);
+                    var TypeId = [];
+                    for (var i = 0; i < nodes.length; i++) {
+                        TypeId.push(nodes[i].id);
+                    }
+                    $.ajax({
+                        url: '/api/Product/setProductRe?ProductId=' + ProductId,
+                        type: 'Post',
+                        data: JSON.stringify(TypeId),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.closeAll('loading');
+                            if (res.success) {
+                                layer.msg(res.message, { icon: 1 });
+                                layer.close(index);
+                            } else {
+                                layer.msg(res.message, { icon: 2 });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        $("[name=AddProduct]").click(function () {
+            var height = $(document.body).height();
+            var width = $(document.body).width();
+            width = width - 80;
+            var check = layer.open({
+                type: 2,
+                title: '产品详情',
+                maxmin: true,
+                shadeClose: true, //点击遮罩关闭层
+                area: [width + 'px','580px'],
+                content: '/Product/ProductDetails',
+            });
+            layer.full(check);
+        });
+
+        ///上架所有产品
+        $("[name=ReleaseAll]").click(function () {
+            layer.confirm('确认要上架所有产品吗?', { btn: ['确定', '取消'] }
+                , function (index) {
+                    $.ajax({
+                        url: '/api/Product/ReleaseProduct?Type=1',
+                        type: 'Post',
+                        data: JSON.stringify([{id:0}]),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.msg(res.message);
+                            if (res.success) {
+                                setTimeout("location.reload()", 1000);
+                            }
+                        }
+                    });
+                });
+        });
+
+        ///下架所有产品
+        $("[name=TakeOffAll]").click(function () {
+            layer.confirm('确认要下架所有产品吗?', { btn: ['确定', '取消'] }
+                , function (index) {
+                    $.ajax({
+                        url: '/api/Product/ReleaseProduct?Type=0',
+                        type: 'Post',
+                        data: JSON.stringify([{ id: 0 }]),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.msg(res.message);
+                            if (res.success) {
+                                setTimeout("location.reload()", 1000);
+                            }
+                        }
+                    });
+                });
+
+        });
+
+        ///上架选择产品
+        $("[name=ReleaseSelect]").click(function () {
+            var checkRows = table.checkStatus('tableProducts');
+            var Id = [];
+            for (i = 0; i < checkRows.data.length; i++) {
+                Id.push({ id: checkRows.data[i].id });
+            }
+            layer.confirm('选择了'+checkRows.data.length+'条产品,确认要上架这些产品吗?', { btn: ['确定', '取消'] }
+                , function (index) {
+                    $.ajax({
+                        url: '/api/Product/ReleaseProduct?Type=1',
+                        type: 'Post',
+                        data: JSON.stringify(Id),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.msg(res.message);
+                            if (res.success) {
+                                setTimeout("location.reload()", 1000);
+                            }
+                        }
+                    });
+                });
+
+        });
+
+        ///下架选择产品
+        $("[name=TakeOffSelect]").click(function () {
+            var checkRows = table.checkStatus('tableProducts');
+            var Id = [];
+            for (i = 0; i < checkRows.data.length; i++) {
+                Id.push({ id: checkRows.data[i].id });
+            }
+            layer.confirm('选择了' + checkRows.data.length + '条产品,确认要下架这些产品吗?', { btn: ['确定', '取消'] }
+                , function (index) {
+                    $.ajax({
+                        url: '/api/Product/ReleaseProduct?Type=0',
+                        type: 'Post',
+                        data: JSON.stringify(Id),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.msg(res.message);
+                            if (res.success) {
+                                setTimeout("location.reload()", 1000);
+                            }
+                        }
+                    });
+                });
+        });
+
+        //产品分类
+        function showPermModel(ProductId) {
+            admin.open({
+                title: '产品分类设置',
+                btn: ['保存', '取消'],
+                content: '<ul id="treeAuth" class="ztree"></ul>',
+                success: function (layero, index) {
+                    $(layero).children('.layui-layer-content').css({'max-height': '300px', 'overflow': 'auto'});
+                    layer.load(2);
+                    var setting = {check: {enable: true}, data: {simpleData: {enable: true}}};
+                    $.get('/api/Product/getProType', {
+                        ProductId: ProductId
+                    }, function (res) {
+                        $.fn.zTree.init($('#treeAuth'), setting, res.data);
+                        layer.closeAll('loading');
+                    }, 'json');
+                },
+                yes: function (index) {
+                    layer.load(2);
+                    var treeObj = $.fn.zTree.getZTreeObj('treeAuth');
+                    var nodes = treeObj.getCheckedNodes(true);
+                    var TypeId = [];
+                    for (var i = 0; i < nodes.length; i++) {
+                        TypeId.push(nodes[i].id);
+                    }
+                    $.ajax({
+                        url: '/api/Product/setProType?ProductId='+ProductId,
+                        type: 'Post',
+                        data: JSON.stringify(TypeId),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.closeAll('loading');
+                            if (res.success) {
+                                layer.msg(res.message, { icon: 1 });
+                                layer.close(index);
+                            } else {
+                                layer.msg(res.message, { icon: 2 });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+    });
+</script>

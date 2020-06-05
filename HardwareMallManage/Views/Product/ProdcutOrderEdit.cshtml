@@ -1,0 +1,172 @@
+﻿
+@{
+    ViewData["Title"] = "ProdcutOrderEdit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Id = ViewData["Id"] as string;
+}
+
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- 正文开始 -->
+<form class="layui-form" id="formAdvForm" lay-filter="formAdvForm">
+    <input name="Id" type="hidden" value="@Id" />
+    <div class="layui-fluid" style="padding-bottom: 75px;">
+        <div class="layui-card">
+            <div class="layui-card-header">联系信息</div>
+            <div class="layui-card-body">
+
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">编号:</label>
+                        <div class="layui-input-block">
+                            <input name="orderCode" readonly="readonly" placeholder="请输入" class="layui-input"
+                                   lay-verType="tips" />
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">金额:</label>
+                        <div class="layui-input-block">
+                            <input name="amount" readonly="readonly" placeholder="金额" class="layui-input"
+                                   lay-verType="tips" />
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">处理状态 :</label>
+                        <div class="layui-input-block">
+                            <input name="processstatus" readonly="readonly" placeholder="处理状态" class="layui-input"
+                                   lay-verType="tips" />
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">处理时间 :</label>
+                        <div class="layui-input-block">
+                            <input name="processTime" readonly="readonly" placeholder="处理时间" class="layui-input"
+                                   lay-verType="tips" />
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">客户提交时间 :</label>
+                        <div class="layui-input-block">
+                            <input name="createTime" readonly="readonly" placeholder="处理时间" class="layui-input"
+                                   lay-verType="tips" />
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">联系方式:</label>
+                        <div class="layui-input-block">
+                            <textarea name="contactDetails" readonly="readonly" placeholder="请输入联系方式" class="layui-textarea"
+                                      lay-verType="tips"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">电子邮箱:</label>
+                        <div class="layui-input-block">
+                            <textarea name="email" readonly="readonly" placeholder="请输入电子邮箱" class="layui-textarea"
+                                      lay-verType="tips"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">订单备注:</label>
+                        <div class="layui-input-block">
+                            <textarea name="remark" readonly="readonly" placeholder="请输入订单备注" class="layui-textarea"
+                                      lay-verType="tips"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="layui-card">
+            <div class="layui-card-header">商品列表</div>
+            <div class="layui-card-body">
+                <table id="OrderDetailsTable" lay-filter="OrderDetailsTable"></table>
+            </div>
+        </div>
+
+        <div class="layui-card">
+            <div class="layui-card-header">处理备注</div>
+            <div class="layui-card-body">
+                <div class="layui-form-item layui-row">
+                    <label class="layui-form-label layui-form-required">处理备注:</label>
+                    <div class="layui-input-block">
+                        <textarea name="processRemark" placeholder="请输入处理备注" class="layui-textarea"
+                                  lay-verType="tips"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-group-bottom text-right">
+        <a class="layui-btn" lay-filter="formAdvSubmit" lay-submit>&emsp;处理&emsp;</a>
+    </div>
+
+</form>
+<script type="text/javascript">
+    layui.use(['admin', 'layer', 'form', 'table', 'laydate', 'upload'], function () {
+        var $ = layui.jquery;
+        var admin = layui.admin;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var Id = $("[name=Id]").val();
+
+        //页面加载
+        if (Id != "0") {
+            $.get('/api/Product/getOrderInfo?Id=' + Id, {
+
+            }, function (data) {
+                var Info = data.data;
+                form.val("formAdvForm", Info);
+            }, 'json');
+        };
+
+        /* 渲染商品表格 */
+        table.render({
+            elem: '#OrderDetailsTable',
+            url: '/Api/Product/GetOrderDetails?OrderId=' + Id,
+            page: false,
+            cellMinWidth: 100,
+            cols: [[
+                { field: 'productName', title: '产品名称' },
+                { field: 'formatName', title: '产品规格' },
+                { field: 'package', title: '包装' },
+                { field: 'quantity', title: '数量' },
+                {
+                    field: 'amount', title: '金额', templet: function (d) {
+                        return d.amount.toFixed(2) + " " + d.amountType;
+                    }
+                }
+            ]]
+        });
+
+        /* 监听表单提交 */
+        form.on('submit(formAdvSubmit)', function (data) {
+            layer.confirm('确认要处理吗?', { btn: ['确定', '取消'] }
+                , function (index) {
+                    $.ajax({
+                        url: '/api/Product/setOrder',
+                        type: 'post',
+                        data: JSON.stringify({ Id: Id, ProcessRemark: $("[name=processRemark]").val() }),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.msg(res.message);
+                            if (res.success) {
+                                setTimeout("location.reload()", 1000);
+                            }
+                        }
+                    });
+                });
+        });
+
+    });
+</script>
+
+

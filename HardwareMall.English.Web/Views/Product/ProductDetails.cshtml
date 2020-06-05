@@ -1,0 +1,452 @@
+﻿
+@{
+    @using Model.HardwareMall;
+    Layout = "~/Views/Shared/_ViewBodyLayOut.cshtml";
+    //产品对象
+    var ProductInfo = ViewData["ProductInfo"] as ModW_Product;
+    //产品图片集合
+    var ImgList = ViewData["ImgList"] as List<ModW_ProductImg>;
+    //包装信息集合
+    var Packagelist = ViewData["Packagelist"] as List<ModW_ProductPackage>;
+    //技术参数集合
+    var SkillParameter = ViewData["SkillParameter"] as List<JsonDto>;
+    var IsNoPrice = 0;
+    if (Packagelist != null && Packagelist.Count > 0)
+    {
+        IsNoPrice = 0;
+    }
+    else
+    {
+        IsNoPrice = 1;
+    }
+    //产品规格
+    var Format = ViewData["ProductFormat"] as List<ModW_ProductFormat>;
+    ViewData["Title"] = ProductInfo.ProductName;
+}
+<div class="Crumbs">
+    <div class="container">
+        <p>Your location：<a href="/">Home</a>&gt;<a href="#">Product</a>&gt;<a href="#">@ProductInfo.ProductName</a></p>
+    </div>
+</div>
+<div class="proDotBox">
+    <input type="hidden" value="@IsNoPrice" name="IsNoPrice" id="IsNoPrice" />
+    <div class="container ">
+        <div class="proInfoTop clearfix">
+            <div class="dotBoxL">
+                <ul>
+                    @foreach (var m in ImgList)
+                    {
+                        <li>
+                            <div class="smallBox">
+                                <img src="@m.Img">
+                            </div>
+
+                            @*<div class="bigBox">
+                                    <img src="@m.Img" />
+                                </div>*@
+                        </li>
+                    }
+                    <span class="move"></span>
+                </ul>
+                <ol class="clearfix">
+                    @foreach (var m in ImgList)
+                    {
+                        <li>
+                            <img src="@m.Img" height="55" width="55">
+                        </li>
+                    }
+                </ol>
+            </div>
+            <div class="dotBoxR">
+                <h2 class="proTit">@ProductInfo.ProductName</h2>
+                <table border="0" cellspacing="0" cellpadding="0" class="priceTab">
+                    <tr class="priceTit">
+                        <td>Price</td>
+                        @{
+                            if (Packagelist != null && Packagelist.Count > 0)
+                            {
+                                foreach (var m in Packagelist)
+                                {
+                                    <td>
+                                        <span class="fd-cny">@m.PriceType</span>
+                                        <span class="fd-price">@m.Price.Value.ToString("0.00")</span>
+                                    </td>
+                                }
+                            }
+                            else
+                            {
+                                <td>
+                                    <span class="fd-cny"></span>
+                                    <span class="fd-price">Price Quote</span>
+                                </td>
+                            }
+
+                        }
+                    </tr>
+                    <tr class="priceTitBtm">
+                        <td>Number</td>
+                        @{
+                            if (Packagelist != null && Packagelist.Count > 0)
+                            {
+                                @foreach (var m in Packagelist)
+                                {
+                                    <td>@m.Package</td>
+                                }
+                            }
+                            else
+                            {
+                                <td>Price Quote</td>
+                            }
+                        }
+                    </tr>
+                </table>
+                <div class="proInfo">
+                    @{
+
+                        if (!string.IsNullOrWhiteSpace(ProductInfo.BillNo))
+                        {
+                            <p><span>Order Number：</span>@ProductInfo.BillNo</p>
+                        }
+                        if (!string.IsNullOrWhiteSpace(ProductInfo.ModelNo))
+                        {
+                            <p><span>Brand：</span>@ProductInfo.ModelNo</p>
+                        }
+                        if (!string.IsNullOrWhiteSpace(ProductInfo.Reserve))
+                        {
+                            <p><span>Inventoried Stock：</span>@ProductInfo.Reserve</p>
+                        }
+                        if (!string.IsNullOrWhiteSpace(ProductInfo.Ship))
+                        {
+                            <p><span>Processing Times：</span>@ProductInfo.Ship</p>
+                        }
+                        if (!string.IsNullOrWhiteSpace(ProductInfo.EATime))
+                        {
+                            <p><span>Estimated Arrival Time：</span>@ProductInfo.EATime</p>
+                        }
+                    }
+                </div>
+                <div class="checkBtm">
+                    @if (Format != null && Format.Count > 0)
+                    {
+                        <dl class="clearfix topDl Format" id="FormatDiv">
+                            <dt>Specification：</dt>
+                            <dd>
+                                @{
+                                    var i = 0;
+                                    @foreach (var m in Format)
+                                    {
+                                        if (i == 0)
+                                        {
+                                            <span id="OneFormat" FormatId="@m.Id" class="clicked" onclick="GetPackage(@m.Id)">@m.FormatName</span>
+                                        }
+                                        else
+                                        {
+                                            <span FormatId="@m.Id" onclick="GetPackage(@m.Id)">@m.FormatName</span>
+                                        }
+                                        i++;
+                                    }
+                                }
+                            </dd>
+                        </dl>
+                    }
+                    <dl class="clearfix topDl PackageD1" id="PackageDiv" style="display:none">
+                        <dt>Package：</dt>
+                        <dd>
+                            <span>1个</span><span>1盒</span><span>1箱</span>
+                        </dd>
+                    </dl>
+                    <dl class="clearfix btmDl">
+                        <dt>Quantity：</dt>
+                        <dd>
+                            <div class="numSelect">
+                                <span class="cutBtn">-</span>
+                                <span class="numBtn"><input type="text" value="1" maxlength="4" onkeyup="value=value.replace(/[^\d]/g,'')"></span>
+                                <span class="addBtn">+</span>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="sumPrice">
+                    <P>Total：<span>@ProductInfo.PriceType<em id="EmPrice">0.00</em></span></P>
+                </div>
+                <div class="proDotBtn">
+                    <a href="javascript:;" class="addCart" id="addCart">Add to cart</a>
+                    <a href="javascript:;" class="contactUs">Contact us</a>
+                    <input type="hidden" value="" name="Amount" />
+                </div>
+            </div>
+        </div>
+        <div class="proInfoBox">
+            <h2>Detailes</h2>
+            <h3>Technical parameter</h3>
+            <table border="0" cellspacing="0" cellpadding="0">
+                @{
+                    if (SkillParameter != null && SkillParameter.Count > 0)
+                    {
+                        foreach (var m in SkillParameter)
+                        {
+                            <tr><td>@m.Key</td><td>@m.Value</td></tr>
+                        }
+                    }
+                }
+            </table>
+            <div>@Html.Raw(ProductInfo.Description)</div>
+        </div>
+    </div>
+</div>
+<div class="fixBox">
+    <div class="container">
+        <div class="fixMain">
+            <form>
+                <label>
+                    <span>Products</span>
+                    <input type="text" readonly="readonly" value="@ProductInfo.ProductName" />
+                </label>
+                <label>
+                    <span><sup class="red">*</sup>Name</span>
+                    <input type="text" name="ClientName" placeholder="Name" />
+                </label>
+                <label>
+                    <span><sup class="red">*</sup>Contact Number</span>
+                    <input type="text" name="ContactDetails" placeholder="Contact" />
+                </label>
+                <label>
+                    <span><sup class="red">*</sup>E-mail Address</span>
+                    <input type="text" name="Email" placeholder="Email" />
+                </label>
+                <label>
+                    <span>Remark</span>
+                    <textarea placeholder="Remark" name="Remark"></textarea>
+                </label>
+                <b class="red">*</b>Required
+                <div class="btnBtm">
+                    <a href="#" class="subBtn">
+                        Submit
+                    </a>
+                    <a href="#" class="cancelBtn">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<div class="mask">
+
+</div>
+<script>
+    var ProductId =@ProductInfo.ID;
+    $(function () {
+        if ($("#OneFormat").length > 0) {
+            $("#OneFormat").click();
+        }
+        IsNoPrice();
+        $(".subBtn").click(function () {
+            var ProductData = [];
+            PackageId = $('.PackageD1 dd span.clicked').attr('PackageId');
+            FormatId = $('.Format dd span.clicked').attr('FormatId');
+            ProductData.push({
+                ProductId: ProductId,
+                Quantity: $(".numBtn input").val(),
+                PackageId: PackageId,
+                FormatId: FormatId,
+                AmountType: $('.PackageD1 dd span.clicked').attr('PriceType'),
+                Amount: $("[name=Amount]").val(),
+            });
+            if (typeof (PackageId) == undefined || typeof (FormatId) == undefined) {
+                alert("Error");
+                return;
+            }
+            if (PackageId == null || PackageId == null) {
+                alert("Error");
+                return;
+            }
+            if (confirm("Confirm?")) {
+                $.ajax({
+                    url: '/api/Product/addOrder',
+                    type: 'Post',
+                    async: false,
+                    contentType: 'application/json;charset=utf-8',
+                    data: JSON.stringify({
+                        ClientName: $("[name=ClientName]").val(),
+                        ContactDetails: $("[name=ContactDetails]").val(),
+                        Remark: $("[name=Remark]").val(),
+                        Email: $("[name=Email]").val(),
+                        ProductInfo: ProductData
+                    }),
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.success) {
+                            alert("Submit successfully, our staff will contact you as soon as possible.");
+                            setTimeout("location.reload()", 700);
+                        }
+                        else {
+                            alert(res.message);
+                        }
+                    }
+                });
+            }
+        });
+
+        $(".dotBoxL ol li").mouseover(function () {
+            var index = $(this).index();
+            $(".dotBoxL ul li").eq(index).css({ "display": "block" }).siblings().css({ "display": "none" });
+
+        });
+        inputChange();
+        //// 拖拽
+        //var w = $(".dotBoxL ul").offset().left;
+        //var h = $(".dotBoxL ul").offset().top;
+        //var w1 = $(".dotBoxL ul").width();
+        //var h1 = $(".dotBoxL ul").height();
+        //$(".dotBoxL ul").mouseover(function () {
+        //    $(".dotBoxL ul").mousemove(function (e) {
+        //        var mx = e.pageX - w - 75;
+        //        var my = e.pageY - h - 75;
+        //        var bigX = mx * 450 / 400;
+        //        var bigY = my * 450 / 400;
+        //        if (mx < 0) { mx = 0 }
+        //        if (my < 0) { my = 0 }
+        //        if (mx > w1 - 150) { mx = w1 - 150 }
+        //        if (my > h1 - 150) { my = h1 - 150 }
+        //        $(this).find(".move").show();
+        //        $(this).find(".bigBox").show();
+        //        $(".move").css({ "left": mx, "top": my });
+        //        $(this).find(".bigBox img").css({
+        //            "left": "-" + bigX + "px",
+        //            "top": "-" + bigY + "px"
+        //        })
+
+        //    })
+        //})
+        $(".dotBoxL ul").mouseout(function () {
+            $(this).find(".bigBox").hide();
+            $(this).find(".move").hide();
+        })
+        $(".proDotBtn .contactUs").click(function () {
+            $(".mask").stop().fadeIn();
+            $(".fixBox").stop().fadeIn();
+        });
+        $(".btnBtm a").click(function () {
+            $(".mask").stop().fadeOut();
+            $(".fixBox").stop().fadeOut();
+        });
+
+
+        $(".topDl dd span").click(function () {
+            $(this).addClass("clicked").siblings().removeClass("clicked");
+            inputChange();
+        });
+
+        $(".addBtn").click(function () {
+            var OldNum = parseInt($(".numBtn input").val());
+            OldNum++;
+            $(".numBtn input").val(OldNum);
+            inputChange();
+        });
+        $(".cutBtn").click(function () {
+            var OldNum = parseInt($(".numBtn input").val());
+            OldNum--;
+            if (OldNum >= 1) {
+                $(".numBtn input").val(OldNum);
+                inputChange();
+            }
+        });
+
+        //计算价格
+        $('.numBtn input').bind('input propertychange', function () {
+            inputChange();
+        })
+
+    })
+
+    function inputChange() {
+        var Price = $('.PackageD1 dd span.clicked').attr('value');
+        var PNum = $('.PackageD1 dd span.clicked').attr('PNum');
+        var Num = parseInt($(".numBtn input").val());
+        if ($(".numBtn input").val()==null||$(".numBtn input").val()=="") {
+            Num = 0;
+        }
+        var PriceB = Price * Num * PNum;
+        if (isNaN(PriceB)) {
+            return;
+        }
+        $("#EmPrice").text(PriceB.toFixed(2));
+        $("[name=Amount]").val(PriceB.toFixed(2));
+    }
+
+    //获取该规格包装
+    function GetPackage(FormatId) {
+        $.ajax({
+            url: '/Api/Product/getProductPackageSpan?FormatId=' + FormatId,
+            type: 'get',
+            success: function (result) {
+                var Html = "<dt>Package：</dt>";
+                var PackageList = result.data;
+                if (PackageList != null && PackageList.length > 0) {
+                    Html += "<dd>";
+                    var i = 0;
+                    PackageList.forEach(function (m) {
+                        if (i == 0) {
+                            Html += "<span id=\"PackageSpanOne\" class=\"clicked\" PriceType=\"" + m.priceType+"\" value=\"" + m.price + "\" PNum=\"" + m.pNum + "\" PackageId=\"" + m.id + "\">" + m.package+"</span>";
+                        }
+                        else {
+                            Html += "<span value=\"" + m.price + "\" PriceType=\"" + m.priceType +"\" PNum=\"" + m.pNum + "\" PackageId=\"" + m.id + "\">" + m.package+"</span>";
+                        }
+                        i++;
+                    });
+                    Html += "</dd>";
+
+                    $("#PackageDiv").html(Html);
+                    $("#PackageDiv").css("display", "block");
+                    $(".PackageD1 dd span").click(function () {
+                        $(this).addClass("clicked").siblings().removeClass("clicked");
+                        inputChange();
+                    });
+                    if ($("#PackageSpanOne").length > 0) {
+                        $("#PackageSpanOne").click();
+                    }
+                }
+            }
+        });
+    }
+
+    //如果没有价格，就不允许加入购物车
+    function IsNoPrice() {
+        var IsNoPrice = $("#IsNoPrice").val();
+        if (IsNoPrice == 1) {
+            $("#addCart").css({ 'background-color': 'gray' });
+        }
+        else {
+            $(".addCart").click(function () {
+                if (confirm("Are you sure add shopping cart?")) {
+                    $.ajax({
+                        url: '/api/Product/addShop',
+                        type: 'Post',
+                        async: false,
+                        contentType: 'application/json;charset=utf-8',
+                        data: JSON.stringify({
+                            ProductId: ProductId,
+                            Quantity: $(".numBtn input").val(),
+                            PackageId: $('.PackageD1 dd span.clicked').attr('PackageId'),
+                            FormatId: $(".Format dd span.clicked").attr('FormatId'),
+                            Amount: $("[name=Amount]").val()
+                        }),
+                        dataType: "json",
+                        success: function (res) {
+                            if (res.success) {
+                                alert("Success");
+                                location.reload()
+                            }
+                            else {
+                                alert(res.message);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+</script>
+

@@ -1,0 +1,202 @@
+﻿
+@{
+    @using HardwareMall.Tool.EnumHelper;
+    @using HardwareMall.Cache;
+    @using Model.HardwareMall;
+    @using Model.HardwareMall_Chinese;
+    ViewData["Title"] = "首页";
+    Layout = "~/Views/Shared/_ViewBodyLayOut.cshtml";
+    List<ModW_ProductType> TypeList = CacheStaticObj.ProductTypeList;
+    List<ModW_ProductType> ProTypeList = TypeList.Where(m => m.ParentId == 0).ToList();
+    //购物车数量
+    var ShopNum = ViewData["ShopList"] as List<ShoppingCartDto>;
+    var News1 = ViewData["News1"] as List<HardwareMall.Model.NewsDto>;
+    var News2 = ViewData["News2"] as List<HardwareMall.Model.NewsDto>;
+    var ProductRelist = ViewData["ProductRe"] as List<ModM_ProductRe>;
+
+    List<ModM_HomeElement> HomeElementList = ViewData["HomeElement"] as List<ModM_HomeElement>;
+}
+    <div class="banner hidden-xs">
+        <div class="swiper-container swiper_ind">
+            <div class="swiper_btn">
+                <div class="container">
+                    <a href="#" class="btnL"><i class="iconfont arrL">&#xe61a;</i></a>
+                    <a href="#" class="btnR"><i class="iconfont arrR">&#xe7e0;</i></a>
+                </div>
+            </div>
+            <div class="swiper-wrapper">
+                @{
+                    var Bannerlist = HomeElementList.Where(n => n.HomeTypeEnum == (int)HomeElementType.Banner);
+                    if (Bannerlist != null && Bannerlist.Count() > 0)
+                    {
+                        foreach (var m in Bannerlist.ToList().OrderBy(m => m.Sort))
+                        {
+                            <div class="swiper-slide" style="background: url(@m.Img.Replace('\\','/')) no-repeat center center;">
+                                <a target="_blank" href="@m.Href">
+                                    <div class="container txtBox">
+                                        <div class="txt">
+                                            <h2>@m.Title</h2>
+                                            <P>@m.LittleTitle</P>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+            <div class="swiper-pagination pagination_ind">
+
+            </div>
+        </div>
+
+    </div>
+    <div class="banner2 visible-xs">
+        <div class="swiper-container swiper_ind">
+            <div class="swiper-wrapper">
+                @{
+                    if (Bannerlist != null && Bannerlist.Count() > 0)
+                    {
+                        foreach (var m in Bannerlist.ToList().OrderBy(m => m.Sort))
+                        {
+                            <div class="swiper-slide">
+                                <img src="@m.Img.Replace('\\','/')" />
+                                <div class="wzBox">
+                                    <h2>@m.Title</h2>
+                                    <P>@m.LittleTitle</P>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+            <div class="swiper-pagination pagination_ind">
+
+            </div>
+        </div>
+    </div>
+    <div class="proNav">
+        <div class="container">
+            <ul class="clearfix">
+                @{
+                    foreach (var m in ProTypeList.OrderBy(n=>n.Sort))
+                    {
+                        <li><a href="/Product/ProductList?ProBigTypeId=@m.Id" title="@(m.TypeName)"><em><img src="@(m.Img)"></em>@(m.TypeName)</a></li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="goodProduct">
+        <div class="container">
+            <div class="titBox">
+                <h2><span><b>商品推荐</b><br><em>Good Products</em></span></h2>
+            </div>
+            <div class="goodMain">
+                <ul class="clearfix">
+                    @{
+                        foreach (var m in ProductRelist)
+                        {
+                            <li>
+                                <a href="@m.Url">
+                                    <div class="imgBox">
+                                        <img src="@m.Img" />
+                                    </div>
+                                    <div class="txtBox">
+                                        <h3>@m.Title</h3>
+                                        <p>@m.LittleTitle</p>
+                                    </div>
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="brandBox">
+        <div class="container">
+            <div class="titBox">
+                <h2><span><b>优质品牌</b><br><em>Quality brand</em></span></h2>
+            </div>
+            <ul class="clearfix">
+                @{
+                    var QualityBrand = HomeElementList.Where(n => n.HomeTypeEnum == (int)HomeElementType.QualityBrand);
+                    if (QualityBrand != null && QualityBrand.Count()>0)
+                    {
+                        foreach (var m in QualityBrand.ToList().OrderBy(m => m.Sort))
+                        {
+                            <li><a href="@m.Href" style="background: url(@m.Img);"><span>@m.Title</span></a></li>
+                        }
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="indNews">
+        <div class="container">
+            <div class="titBox">
+                <h2><span><b>新闻资讯</b><br><em>News information</em></span></h2>
+            </div>
+            <dl class="clearfix">
+                <dt>
+                    @{
+                        var NewsInformationImg = HomeElementList.Where(m => m.HomeTypeEnum == (int)HomeElementType.NewsInformationImg);
+                        if (NewsInformationImg != null && NewsInformationImg.Count() > 0)
+                        {
+                            <a href="@NewsInformationImg.ToList()[0].Href" class="videoBox" style="background-image: url(@NewsInformationImg.ToList()[0].Img)">
+                            </a>
+                        }
+                    }
+
+                </dt>
+                <dd class="clearfix">
+                    <div class="newsLis">
+                        <div class="newsTit">
+                            <hr>
+                            <h2>公司新闻<a href="/Home/News">更多></a></h2>
+                        </div>
+                        <ul>
+                            @{
+                                foreach (var m in News1)
+                                {
+                                    <li><a href="/Home/NewsContent?NewsId=@m.Id" title="@m.NewsTitle">@m.NewsTitle</a></li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                    <div class="newsLis">
+                        <div class="newsTit">
+                            <hr>
+                            <h2>行业资讯<a href="/Home/News?NewType=@((int)NewsType.IndustryNews)">更多></a></h2>
+                        </div>
+                        <ul>
+                            @{
+                                foreach (var m in News2)
+                                {
+                                    <li><a href="/Home/NewsContent?NewsId=@m.Id" title="@m.NewsTitle">@m.NewsTitle</a></li>
+                                }
+                            }
+                        </ul>
+                    </div>
+
+                </dd>
+            </dl>
+        </div>
+    </div>
+<script>
+    var mySwiper1 = new Swiper('.swiper_ind', {
+        autoplay: 5000,
+        spaceBetween: 0,
+        loop: true,
+        pagination: ".pagination_ind",
+        paginationClickable: true,
+        autoplayDisableOnInteraction: false,
+        nextButton: '.btnR',
+        prevButton: '.btnL'
+    })
+
+
+</script>
+

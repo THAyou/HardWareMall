@@ -1,0 +1,115 @@
+﻿
+@{
+    ViewData["Title"] = "新闻中心";
+    Layout = "~/Views/Shared/_ViewBodyLayOut.cshtml";
+    var NewType = ViewData["NewType"] as int?;
+}
+
+
+
+<div class="Crumbs">
+    <div class="container">
+        <p>您现在所在的位置：<a href="/">首页</a>&gt;<a href="#">新闻</a></p>
+    </div>
+</div>
+<div class="mainBox">
+    <div class="container clearfix">
+        <div class="mainL hidden-xs">
+            <ul>
+                <li><a href="/"><i class="iconfont">&#xe603;</i>首页</a></li>
+                <li><a href="/Product/ProductList"><i class="iconfont">&#xe64f;</i>产品目录</a></li>
+                <li><a href="/Home/Brand"><i class="iconfont">&#xe65a;</i>合作品牌</a></li>
+                <li><a href="/Home/Service"><i class="iconfont">&#xe607;</i>技术服务</a></li>
+                <li><a href="/Home/Company"><i class="iconfont">&#xe612;</i>公司介绍</a></li>
+                <li><a href="/Home/Job"><i class="iconfont">&#xe645;</i>人才招聘</a></li>
+                <li><a href="/Home/Contact"><i class="iconfont">&#xe622;</i>联系方式</a></li>
+                <li  class="active"><a href="/Home/News"><i class="iconfont">&#xe610;</i>新闻中心</a></li>
+            </ul>
+        </div>
+        <div class="mainR">
+            <div class="newsBox">
+                <div class="newsBtn">
+                    @{
+                        if (NewType == 1)
+                        {
+                            <a href="/Home/News" class="active">公司新闻</a>
+                            <a href="/Home/News?NewType=2">行业资讯</a>
+                        }
+                        else
+                        {
+                            <a href="/Home/News">公司新闻</a>
+                            <a href="/Home/News?NewType=2" class="active">行业资讯</a>
+                        }
+                    }
+                </div>
+                <ul class="newsUl">
+                </ul>
+                <div class="pagination">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var limit = 10;
+    $(function () {
+        GetPageList(1);
+    });
+    //生成分页工具栏
+    function GetPageToolHtml(PageIndex,PageCount,ViewNum) {
+        var HtmlStr = '<ol class="cl">';
+        if (PageIndex - 1 > 0) {
+            HtmlStr += '<li><a href="javascript:;" onclick="GetPageList(1)">首页</a></li>';
+            HtmlStr += '<li><a href="javascript:;" onclick="GetPageList('+(PageIndex-1)+')">上一页</a></li>';
+        }
+        if (PageIndex > ViewNum) {
+            HtmlStr += '<li><span>.....</span></li>';
+        }
+        for (i = 1; i <= PageCount; i++) {
+            if ((PageIndex - ViewNum < i) && (PageIndex + ViewNum > i)) {
+                if (i == PageIndex) {
+                    HtmlStr += '<li><a href="javascript:;" class="active">' + i + '</a></li>';
+                }
+                else {
+                    HtmlStr += '<li><a href="javascript:;" onclick="GetPageList(' + i + ')">' + i + '</a></li>';
+                }
+            }
+        }
+        if (PageIndex <= PageCount - ViewNum) {
+            HtmlStr += '<li><span>.....</span></li>';
+        }
+        if (PageIndex + 1 <= PageCount) {
+            HtmlStr += '<li><a href="javascript:;" onclick="GetPageList(' + PageCount + ')">末页</a></li>';
+            HtmlStr += '<li><a href="javascript:;" onclick="GetPageList(' + (PageIndex+1) + ')" >下一页</a></li>';
+        }
+        HtmlStr += '</ol>';
+        $(".pagination").html(HtmlStr);
+    }
+    //渲染产品Html
+    function NewViewHtml(NewList) {
+        var HtmlStr = '';
+        //循环生成Html
+        NewList.forEach(function (m, i) {
+            HtmlStr += '<li><a href="/Home/NewsContent?NewsId='+m.id+'" title="'+m.newsTitle+'">'+m.newsTitle+'<span>'+m.newsDataTimeStr+'</span></a></li>';
+        });
+        $(".newsUl").html(HtmlStr);
+    }
+    //获取新闻数据
+    function GetPageList(page) {
+        var NewsType=@NewType;
+        $.ajax({
+            url: '/api/News/getNewsPageList',
+            type: 'get',
+            async: false,
+            data: {page:page,limit:limit,NewsType:NewsType},
+            success: function (res) {
+                if (res.success) {
+                    NewViewHtml(res.data.data);
+                    GetPageToolHtml(res.data.pageIndex, res.data.pageCount, 4);
+                }
+            }
+        });
+    }
+
+</script>
+

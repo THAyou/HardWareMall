@@ -1,0 +1,258 @@
+﻿
+@{
+    ViewData["Title"] = "产品包装管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var ProductId = ViewData["ProductId"] as string;
+    var FormatId = ViewData["FormatId"] as string;
+}
+
+<!-- 加载动画 -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <a class="layui-btn icon-btn" name="AddPackage">
+                            添加包装信息
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- 数据表格 -->
+            <table id="PackageTable" lay-filter="PackageTable"></table>
+        </div>
+    </div>
+</div>
+@*操作*@
+<script type="text/html" id="FormatOperating">
+    <a href="javascript:;" lay-event="edit" class="kong-btn3">编辑包装信息</a>
+    <a href="javascript:;" lay-event="del" class="kong-btn2">删除</a>
+</script>
+@*包装编辑窗口*@
+<script type="text/html" id="PackageHtml">
+    <form class="layui-form model-form" id="Package" lay-filter="Package">
+        <input type="hidden" name="id" />
+        <input type="hidden" name="productId" />
+        <input type="hidden" name="formatId" />
+        <div class="layui-form-item">
+            <label class="layui-form-label">包装规格：</label>
+            <div class="layui-input-block">
+                <input name="package" placeholder="请输入包装规格" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">价格：</label>
+            <div class="layui-input-block">
+                <input name="price" placeholder="请输入价格" class="layui-input"
+                       lay-verType="tips" onkeyup="this.value=this.value.replace(/[^0-9\.]/g,'')" lay-verify="required" required />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">包装数量：</label>
+            <div class="layui-input-block">
+                <input name="pNum" placeholder="请输入包装数量(默认为1)" class="layui-input"
+                       lay-verType="tips" oninput="value=value.replace(/[^\d]/g,'')" lay-verify="required" required />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">价格类型:</label>
+            <div class="layui-input-block">
+                <select name="priceType" lay-verType="tips" lay-verify="required" required>
+                    <option value="">请选择价格类型</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">排序:</label>
+            <div class="layui-input-block">
+                <input name="sort" placeholder="请输入排序" class="layui-input"
+                       lay-verType="tips" onkeyup="value=value.replace(/[^\d]/g,'')" lay-verify="required" required />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block text-right">
+                <a class="layui-btn layui-btn-primary" id="closePassword" ew-event="closeDialog">取消</a>
+                <a class="layui-btn" lay-filter="submit-psw" lay-submit>保存</a>
+            </div>
+        </div>
+    </form>
+</script>
+<script>
+    var FormatId =@FormatId;
+    var ProductId=@ProductId;
+        layui.use(['admin','layer', 'form', 'table', 'laydate','upload'], function () {
+            var $ = layui.jquery;
+            var admin = layui.admin;
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var laydate = layui.laydate;
+            var upload = layui.upload;
+            /* 渲染表格 */
+            var insTb=table.render({
+                elem: '#PackageTable',
+                url: '/api/Product/getProductPackage?ProductId=' + ProductId + '&FormatId=' + FormatId,
+                page: false,
+                cellMinWidth: 100,
+                cols: [[
+                    { field: 'package', title: '包装', align: 'center' },
+                    { field: 'price', title: '价格', align: 'center' },
+                    { field: 'sort', title: '排序', align: 'center' },
+                    { field: 'pNum', title: '个数', align: 'center' },
+                    { title: '操作', toolbar: '#FormatOperating', align: 'center', fixed: 'right', minWidth: 200}
+                ]]
+            });
+
+            //监听工具条
+            table.on('tool(PackageTable)', function (obj) {
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值
+                if (ProductId == "0") {
+                    layer.msg("请先保存产品信息");
+                    return;
+                }
+                if (layEvent === 'edit') { //设为列表展示
+                    admin.open({
+                        type: 1,
+                        title: '编辑包装信息',
+                        content: $("#PackageHtml").html(),
+                        success: function (layero, dIndex) {
+                            //加载下拉框
+                            $.ajax({
+                                url: '/Api/Product/getPriceType',
+                                type: 'get',
+                                async: false,
+                                success: function (data) {
+                                    if (data.success) {
+                                        var html = '';
+                                        data.data.forEach(function (m, i) {
+                                            html += '<option value="' + m.priceType + '">' + m.priceType + '</option>';
+                                        });
+                                        $("[name=priceType]").append(html);
+                                        layui.form.render("select");
+                                    }
+                                }
+                            });
+                            form.val("Package", data);
+                            form.on('submit(submit-psw)', function (data) {
+                                layer.confirm('确定要保存吗？', {
+                                    skin: 'layui-layer-admin',
+                                    shade: .1
+                                }, function (i) {
+                                    var url = '/api/Product/saveProductPackage?Type=0'
+                                    $.ajax({
+                                        url: url,
+                                        type: 'Post',
+                                        contentType: "application/json;charset=utf-8",
+                                        data: JSON.stringify(data.field),
+                                        async: false,
+                                        dataType: 'json',
+                                        success: function (result) {
+                                            layer.closeAll('loading');
+                                            if (result.code == 1) {
+                                                layer.msg(result.message, { icon: 1 });
+                                                setTimeout("location.reload();layer.close(" + dIndex + ");", 1000);
+
+                                            } else {
+                                                layer.msg(result.message, { icon: 2 });
+                                            }
+                                        }
+                                    });
+                                });
+                                return false;
+                            });
+                        }
+                    });
+                }
+                if (layEvent == 'del') {//删除
+                    layer.confirm('确认要删除包装信息吗?', { btn: ['确定', '取消'] }
+                        , function (index) {
+                            $.ajax({
+                                url: '/api/Product/delProductPackage',
+                                type: 'Delete',
+                                data: JSON.stringify({ id: data.id }),
+                                contentType: "application/json;charset=utf-8",
+                                dataType: "json",
+                                success: function (res) {
+                                    layer.msg(res.message);
+                                    if (res.success) {
+                                        setTimeout("location.reload()", 1000);
+                                    }
+                                }
+                            });
+                        });
+                }
+            });
+
+
+            //添加包装信息
+            $("[name=AddPackage]").click(function () {
+                if (ProductId == "0") {
+                    layer.msg("请先保存产品信息");
+                    return;
+                }
+                admin.open({
+                    type: 1,
+                    title: '新增包装信息',
+                    content: $("#PackageHtml").html(),
+                    success: function (layero, dIndex) {
+                        //加载下拉框
+                        $.ajax({
+                            url: '/Api/Product/getPriceType',
+                            type: 'get',
+                            async: false,
+                            success: function (data) {
+                                if (data.success) {
+                                    var html = '';
+                                    data.data.forEach(function (m, i) {
+                                        html += '<option value="' + m.priceType + '">' + m.priceType + '</option>';
+                                    });
+                                    $("[name=priceType]").append(html);
+                                    layui.form.render("select");
+                                }
+                            }
+                        });
+                        $("[name=productId]").val(ProductId);
+                        $("[name=formatId]").val(FormatId);
+                        form.on('submit(submit-psw)', function (data) {
+                            layer.confirm('确定要保存吗？', {
+                                skin: 'layui-layer-admin',
+                                shade: .1
+                            }, function (i) {
+                                var url = '/api/Product/saveProductPackage?Type=1'
+                                $.ajax({
+                                    url: url,
+                                    type: 'Post',
+                                    contentType: "application/json;charset=utf-8",
+                                    data: JSON.stringify(data.field),
+                                    async: false,
+                                    dataType: 'json',
+                                    success: function (result) {
+                                        layer.closeAll('loading');
+                                        if (result.code == 1) {
+                                            layer.msg(result.message, { icon: 1 });
+                                            setTimeout("location.reload();layer.close(" + dIndex + ");", 1000);
+
+                                        } else {
+                                            layer.msg(result.message, { icon: 2 });
+                                        }
+                                    }
+                                });
+                            });
+                            return false;
+                        });
+                    }
+                });
+            });
+
+        });
+</script>

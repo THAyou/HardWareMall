@@ -1,0 +1,510 @@
+﻿
+@{
+    @using HardwareMall.Tool.EnumHelper;
+    @using HardwareMall.Tool;
+    ViewData["Title"] = "网站首页管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- 加载动画 -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">选择类型:</label>
+                        <div class="layui-input-inline">
+                            @Html.DropDownList("ElementType", EnumExtend.GetSelectList(typeof(HomeElementType), "--请选择--", "0"))
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn icon-btn" lay-filter="imgTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <a class="layui-btn icon-btn" name="Go">
+                            清理前台缓存
+                        </a>
+                        <a class="layui-btn icon-btn" name="AddElement">
+                            添加桌面元素
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- 数据表格 -->
+            <table id="tbImgTable" lay-filter="tbImgTable"></table>
+        </div>
+    </div>
+</div>
+@*图片*@
+<script type="text/html" id="Img">
+    <div class="fileBox">
+        <div class="imgBox" style="width:40px;height:40px">
+            <img src="@StaticString.ImgServerUrl{{d.img}}" class="tdImg" tb-img style="cursor: zoom-in" />
+        </div>
+    </div>
+</script>
+@*表格操作*@
+<script type="text/html" id="tbBar">
+    <a href="javascript:;" lay-event="edit" class="kong-btn3">编辑</a>
+    <a href="javascript:;" lay-event="del" class="kong-btn2">删除</a>
+</script>
+
+@*编辑弹窗*@
+<script type="text/html" id="HomeHtml3">
+    <form class="layui-form model-form" id="Home" lay-filter="Home">
+        <input type="hidden" name="id" />
+        <input type="hidden" name="homeTypeEnum" />
+        <input type="hidden" name="img" />
+        <input type="hidden" name="littleTitle" />
+        <input type="hidden" name="title" />
+        <input type="hidden" name="sort" />
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">跳转地址:</label>
+            <div class="layui-input-block">
+                <input name="href" placeholder="请输入跳转地址" class="layui-input"
+                       lay-verType="tips" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block text-right">
+                <a class="layui-btn layui-btn-primary" id="closePassword" ew-event="closeDialog">取消</a>
+                <a class="layui-btn" lay-filter="submit-psw" lay-submit>保存</a>
+            </div>
+        </div>
+    </form>
+</script>
+<script type="text/html" id="HomeHtml2">
+    <form class="layui-form model-form" id="Home" lay-filter="Home">
+        <input type="hidden" name="id" />
+        <input type="hidden" name="homeTypeEnum" />
+        <input type="hidden" name="img" />
+        <input type="hidden" name="littleTitle" />
+        <input type="hidden" name="href" />
+        <input type="hidden" name="sort" />
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">大标题:</label>
+            <div class="layui-input-block">
+                <input name="title" placeholder="请输入排序" class="layui-input"
+                       lay-verType="tips" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block text-right">
+                <a class="layui-btn layui-btn-primary" id="closePassword" ew-event="closeDialog">取消</a>
+                <a class="layui-btn" lay-filter="submit-psw" lay-submit>保存</a>
+            </div>
+        </div>
+    </form>
+</script>
+
+@*编辑弹窗*@
+<script type="text/html" id="HomeHtml">
+    <form class="layui-form model-form" id="Home" lay-filter="Home">
+        <input type="hidden" name="id" />
+        <div class="layui-form-item">
+            <label class="layui-form-label">首页元素类型：</label>
+            <div class="layui-input-block">
+                @Html.DropDownList("homeTypeEnum", EnumExtend.GetSelectList(typeof(HomeElementType)), "--请选择--")
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">图片：</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="attachment" />
+                <button id="file-btn-upload" class="layui-btn layui-btn-sm layui-btn-normal icon-btn" type="button">
+                    <i class="layui-icon">&#xe681;</i>上传文件
+                </button>
+                <div class="fileMain">
+
+                </div>
+                <input type="hidden" name="img" />
+                <div class="fileBox">
+                    <div class="imgBox" style="width:100px;height:100px">
+                        <img id="HomeImg" class="tdImg" tb-img style="cursor: zoom-in" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">大标题:</label>
+            <div class="layui-input-block">
+                <input name="title" placeholder="请输入排序" class="layui-input"
+                       lay-verType="tips" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">小标题:</label>
+            <div class="layui-input-block">
+                <input name="littleTitle" placeholder="请输入排序" class="layui-input"
+                       lay-verType="tips" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">跳转地址:</label>
+            <div class="layui-input-block">
+                <input name="href" placeholder="请输入跳转地址" class="layui-input"
+                       lay-verType="tips" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">排序:</label>
+            <div class="layui-input-block">
+                <input name="sort" oninput="value=value.replace(/[^\d]/g,'')" placeholder="请输入排序" class="layui-input"
+                       lay-verType="tips" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block text-right">
+                <a class="layui-btn layui-btn-primary" id="closePassword" ew-event="closeDialog">取消</a>
+                <a class="layui-btn" lay-filter="submit-psw" lay-submit>保存</a>
+            </div>
+        </div>
+    </form>
+</script>
+<script>
+        layui.use(['admin','layer', 'form', 'table', 'laydate','upload'], function () {
+            var $ = layui.jquery;
+            var admin = layui.admin;
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var laydate = layui.laydate;
+            var upload = layui.upload;
+            /* 渲染表格 */
+            var insTb=table.render({
+                elem: '#tbImgTable',
+                url: '/api/WebManage/getHomeElementList',
+                page: false,
+                cellMinWidth: 100,
+                cols: [[
+                    {
+                        field: 'homeTypeEnum', title: '首页元素类型', align: 'center', templet: function (d) {
+                            if (d.homeTypeEnum ==@((int)HomeElementType.Banner)) {
+                                return '@HomeElementType.Banner.GetDescription()'
+                            }
+                            if (d.homeTypeEnum ==@((int)HomeElementType.QualityBrand)) {
+                                return '@HomeElementType.QualityBrand.GetDescription()'
+                            }
+                            if (d.homeTypeEnum ==@((int)HomeElementType.NewsInformationImg)) {
+                                return '@HomeElementType.NewsInformationImg.GetDescription()'
+                            }
+                            if (d.homeTypeEnum ==@((int)HomeElementType.Tel)) {
+                                return '@HomeElementType.Tel.GetDescription()'
+                            }
+                            if (d.homeTypeEnum ==@((int)HomeElementType.RecordNum)) {
+                                return '@HomeElementType.RecordNum.GetDescription()'
+                            }
+                            if (d.homeTypeEnum ==@((int)HomeElementType.FaceBookUrl)) {
+                                return '@HomeElementType.FaceBookUrl.GetDescription()'
+                            }
+                            if (d.homeTypeEnum ==@((int)HomeElementType.SmallPicture)) {
+                                return '@HomeElementType.SmallPicture.GetDescription()'
+                            }
+                            return '';
+                        }
+                    },
+                    { field: 'img', toolbar: '#Img', title: '图片', align: 'center' },
+                    { field: 'title', title: '大标题', align: 'center' },
+                    { field: 'littleTitle', title: '小标题', align: 'center' },
+                    { field: 'href', title: '跳转地址', align: 'center' },
+                    { field: 'sort', title: '排序', align: 'center' },
+                    {title: '操作', toolbar: '#tbBar', align: 'center', fixed: 'right', minWidth: 200}
+                ]]
+            });
+
+            // 搜索
+            form.on('submit(imgTbSearch)', function (data) {
+                insTb.reload({ where: data.field, page: false });
+            });
+
+            //图片点击放大
+            $(document).off('click.tbImg').on('click.tbImg', '[tb-img]', function () {
+                layer.photos({ photos: { data: [{ src: $(this).attr('src') }] }, shade: .1, closeBtn: true });
+            });
+
+           //监听工具条
+            table.on('tool(tbImgTable)', function (obj) {
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值
+                if (layEvent === 'edit' && data.homeTypeEnum ==@((int)HomeElementType.Tel)) {
+                    admin.open({
+                        type: 1,
+                        title: '编辑首页元素',
+                        content: $("#HomeHtml2").html(),
+                        success: function (layero, dIndex) {
+                            form.val("Home", data);
+                            form.on('submit(submit-psw)', function (data) {
+                                layer.confirm('确定要保存吗？', {
+                                    skin: 'layui-layer-admin',
+                                    shade: .1
+                                }, function (i) {
+                                    var url = '/api/WebManage/saveHomeElement?Type=0'
+                                    $.ajax({
+                                        url: url,
+                                        type: 'Post',
+                                        contentType: "application/json;charset=utf-8",
+                                        data: JSON.stringify(data.field),
+                                        async: false,
+                                        dataType: 'json',
+                                        success: function (result) {
+                                            layer.closeAll('loading');
+                                            if (result.code == 1) {
+                                                layer.msg(result.message, { icon: 1 });
+                                                setTimeout("location.reload();layer.close(" + dIndex + ");", 1000);
+
+                                            } else {
+                                                layer.msg(result.message, { icon: 2 });
+                                            }
+                                        }
+                                    });
+                                });
+                                return false;
+                            });
+                        }
+                    });
+                }
+                else if (layEvent === 'edit' && data.homeTypeEnum ==@((int)HomeElementType.RecordNum)) {
+                    admin.open({
+                        type: 1,
+                        title: '编辑首页元素',
+                        content: $("#HomeHtml2").html(),
+                        success: function (layero, dIndex) {
+                            form.val("Home", data);
+                            form.on('submit(submit-psw)', function (data) {
+                                layer.confirm('确定要保存吗？', {
+                                    skin: 'layui-layer-admin',
+                                    shade: .1
+                                }, function (i) {
+                                    var url = '/api/WebManage/saveHomeElement?Type=0'
+                                    $.ajax({
+                                        url: url,
+                                        type: 'Post',
+                                        contentType: "application/json;charset=utf-8",
+                                        data: JSON.stringify(data.field),
+                                        async: false,
+                                        dataType: 'json',
+                                        success: function (result) {
+                                            layer.closeAll('loading');
+                                            if (result.code == 1) {
+                                                layer.msg(result.message, { icon: 1 });
+                                                setTimeout("location.reload();layer.close(" + dIndex + ");", 1000);
+
+                                            } else {
+                                                layer.msg(result.message, { icon: 2 });
+                                            }
+                                        }
+                                    });
+                                });
+                                return false;
+                            });
+                        }
+                    });
+                }
+                else if (layEvent === 'edit' && data.homeTypeEnum ==@((int)HomeElementType.FaceBookUrl)) {
+                    admin.open({
+                        type: 1,
+                        title: '编辑首页元素',
+                        content: $("#HomeHtml3").html(),
+                        success: function (layero, dIndex) {
+                            form.val("Home", data);
+                            form.on('submit(submit-psw)', function (data) {
+                                layer.confirm('确定要保存吗？', {
+                                    skin: 'layui-layer-admin',
+                                    shade: .1
+                                }, function (i) {
+                                    var url = '/api/WebManage/saveHomeElement?Type=0'
+                                    $.ajax({
+                                        url: url,
+                                        type: 'Post',
+                                        contentType: "application/json;charset=utf-8",
+                                        data: JSON.stringify(data.field),
+                                        async: false,
+                                        dataType: 'json',
+                                        success: function (result) {
+                                            layer.closeAll('loading');
+                                            if (result.code == 1) {
+                                                layer.msg(result.message, { icon: 1 });
+                                                setTimeout("location.reload();layer.close(" + dIndex + ");", 1000);
+
+                                            } else {
+                                                layer.msg(result.message, { icon: 2 });
+                                            }
+                                        }
+                                    });
+                                });
+                                return false;
+                            });
+                        }
+                    });
+                }
+                else if (layEvent === 'edit' ) { //编辑
+                    admin.open({
+                        type: 1,
+                        title: '编辑首页元素',
+                        content: $("#HomeHtml").html(),
+                        success: function (layero, dIndex) {
+                            var ImgServer = "@StaticString.ImgServerUrl";
+                            $("#HomeImg").attr("src", ImgServer + data.img);
+                            form.val("Home", data);
+                            //上传图片
+                            upload.render({
+                                elem: '#file-btn-upload',//绑定元素
+                                url: '/api/UploadFiles/upLoadImg?Path=HomeElement', //必填项
+                                method: 'POST',  //可选项。HTTP类型，默认post
+                                accept: 'file',
+                                done: function (res, index, upload) { //每个文件提交一次触发一次。详见“请求成功的回调”
+                                    if (res.success) {
+                                        var ImgServer = "@StaticString.ImgServerUrl";
+                                        $("#HomeImg").attr("src", ImgServer + res.data);
+                                        $("[name=img]").val(res.data);
+                                    }
+                                }
+                            });
+                            form.on('submit(submit-psw)', function (data) {
+                                layer.confirm('确定要保存吗？', {
+                                    skin: 'layui-layer-admin',
+                                    shade: .1
+                                }, function (i) {
+                                    var url = '/api/WebManage/saveHomeElement?Type=0'
+                                    $.ajax({
+                                        url: url,
+                                        type: 'Post',
+                                        contentType: "application/json;charset=utf-8",
+                                        data: JSON.stringify(data.field),
+                                        async: false,
+                                        dataType: 'json',
+                                        success: function (result) {
+                                            layer.closeAll('loading');
+                                            if (result.code == 1) {
+                                                layer.msg(result.message, { icon: 1 });
+                                                setTimeout("location.reload();layer.close(" + dIndex + ");", 1000);
+
+                                            } else {
+                                                layer.msg(result.message, { icon: 2 });
+                                            }
+                                        }
+                                    });
+                                });
+                                return false;
+                            });
+                        }
+                    });
+                }
+                else if (layEvent == 'del') {
+                    layer.confirm('确认要删除吗?除横幅外，删除一些首页元素可能会造成网站错误!!!', { btn: ['确定', '取消'] }
+                        , function (index) {
+                            $.ajax({
+                                url: '/api/WebManage/delHomeElement',
+                                type: 'delete',
+                                data: JSON.stringify({ Id: data.id }),
+                                contentType: "application/json",
+                                dataType: "json",
+                                success: function (res) {
+                                    layer.msg(res.message);
+                                    if (res.success) {
+                                        setTimeout("location.reload()", 1000);
+                                    }
+                                }
+                            });
+                        });
+                }
+                if (layEvent == 'proType') {
+                    showPermModel(data.id);
+                }
+            });
+
+            //新增桌面元素
+            $("[name=AddElement]").click(function () {
+                admin.open({
+                        type: 1,
+                        title: '编辑首页元素',
+                        content: $("#HomeHtml").html(),
+                        success: function (layero, dIndex) {
+                            var ImgServer = "@StaticString.ImgServerUrl";
+                            //上传图片
+                            layui.form.render("select");
+                            upload.render({
+                                elem: '#file-btn-upload',//绑定元素
+                                url: '/api/UploadFiles/upLoadImg?Path=HomeElement', //必填项
+                                method: 'POST',  //可选项。HTTP类型，默认post
+                                accept: 'file',
+                                done: function (res, index, upload) { //每个文件提交一次触发一次。详见“请求成功的回调”
+                                    if (res.success) {
+                                        var ImgServer = "@StaticString.ImgServerUrl";
+                                        $("#HomeImg").attr("src", ImgServer + res.data);
+                                        $("[name=img]").val(res.data);
+                                    }
+                                }
+                            });
+                            form.on('submit(submit-psw)', function (data) {
+                                layer.confirm('确定要保存吗？', {
+                                    skin: 'layui-layer-admin',
+                                    shade: .1
+                                }, function (i) {
+                                    var url = '/api/WebManage/saveHomeElement?Type=1'
+                                    $.ajax({
+                                        url: url,
+                                        type: 'Post',
+                                        contentType: "application/json;charset=utf-8",
+                                        data: JSON.stringify(data.field),
+                                        async: false,
+                                        dataType: 'json',
+                                        success: function (result) {
+                                            layer.closeAll('loading');
+                                            if (result.code == 1) {
+                                                layer.msg(result.message, { icon: 1 });
+                                                setTimeout("location.reload();layer.close(" + dIndex + ");", 1000);
+
+                                            } else {
+                                                layer.msg(result.message, { icon: 2 });
+                                            }
+                                        }
+                                    });
+                                });
+                                return false;
+                            });
+                        }
+                    });
+            });
+            //清理前台缓存
+            $("[name=Go]").click(function () {
+                layer.confirm('点击后所有元素修改将生效？', {
+                    skin: 'layui-layer-admin',
+                    shade: .1
+                }, function (i) {
+                    var url = '/api/WebManage/clearCache'
+                    $.ajax({
+                        url: url,
+                        type: 'delete',
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify({key:null}),
+                        async: false,
+                        dataType: 'json',
+                        success: function (result) {
+                            layer.closeAll('loading');
+                            if (result.code == 1) {
+                                layer.msg(result.message, { icon: 1 });
+                                setTimeout("location.reload();layer.close(" + dIndex + ");", 1000);
+
+                            } else {
+                                layer.msg(result.message, { icon: 2 });
+                            }
+                        }
+                    });
+                });
+            });
+
+
+
+        });
+</script>
+
+
+

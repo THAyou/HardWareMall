@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HardwareMall.DAL\HardwareMall.DAL.csproj" />
+    <ProjectReference Include="..\HardwareMall.Model\HardwareMall.Model.csproj" />
+    <ProjectReference Include="..\HardwareMall.Tool\HardwareMall.Tool.csproj" />
+  </ItemGroup>
+
+</Project>

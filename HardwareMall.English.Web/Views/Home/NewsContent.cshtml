@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewData["Title"] = "News";
+    Layout = "~/Views/Shared/_ViewBodyLayOut.cshtml";
+    var NewsId = ViewData["NewsId"] as int?;
+}
+
+<div class="Crumbs">
+    <div class="container">
+        <p>Your location：<a href="/">Home</a>&gt;<a href="/">News</a>&gt;<a class="newsTit"></a></p>
+    </div>
+</div>
+<input type="hidden" name="NewsId" value="@NewsId" />
+<div class="mainBox">
+    <div class="container clearfix">
+        <div class="mainL hidden-xs">
+            <ul>
+                <li><a href="/"><i class="iconfont">&#xe603;</i>Home</a></li>
+                <li><a href="/Product/ProductList"><i class="iconfont">&#xe64f;</i>Products</a></li>
+                <li><a href="/Home/Brand"><i class="iconfont">&#xe65a;</i>Brands</a></li>
+                <li><a href="/Home/Service"><i class="iconfont">&#xe607;</i>Service</a></li>
+                <li><a href="/Home/Company"><i class="iconfont">&#xe612;</i>Our Company</a></li>
+                <li><a href="/Home/Job"><i class="iconfont">&#xe645;</i>Careers</a></li>
+                <li><a href="/Home/Contact"><i class="iconfont">&#xe622;</i>Contact Us</a></li>
+                <li class="active"><a href="/Home/News"><i class="iconfont">&#xe610;</i>News</a></li>
+            </ul>
+        </div>
+        <div class="mainR">
+            <div class="newsDotBox">
+                <h2 class="newsTit"></h2>
+                <h5 class="newsTimes"></h5>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        GetNewsContent();
+    });
+    function GetNewsContent() {
+        var NewsId = $("[name=NewsId]").val();
+        $.ajax({
+            url: '/api/News/getNewsContent',
+            type: 'get',
+            async: false,
+            data: { NewsId: NewsId },
+            success: function (res) {
+                if (res.success) {
+                    $(".newsTit").text(res.data.newsTitle);
+                    $(".newsTimes").text("Time:" + res.data.newsDataTime);
+                    $(".newsDotBox").append(res.data.newsContent);
+                }
+            }
+        });
+    }
+
+</script>
+

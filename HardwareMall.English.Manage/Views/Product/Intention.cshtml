@@ -1,0 +1,203 @@
+﻿
+@{
+    ViewData["Title"] = "意见表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- 加载动画 -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">选择类型:</label>
+                        <div class="layui-input-inline">
+                            <select name="processStatus">
+                                <option value="-1">--请选择--</option>
+                                <option value="0">未处理</option>
+                                <option value="1">已处理</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn icon-btn" lay-filter="imgTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                    </div>
+                    <div class="layui-inline">
+                        <a class="layui-btn layui-btn-radius layui-btn-normal" name="DelSelect">删除所选信息</a>
+                        <a class="layui-btn layui-btn-radius layui-btn-danger" name="DelAll">删除所有信息</a>
+                    </div>
+                </div>
+            </div>
+            <!-- 数据表格 -->
+            <table id="tbTable" lay-filter="tbTable"></table>
+        </div>
+    </div>
+</div>
+@*表格操作*@
+<script type="text/html" id="tbBar">
+    <a href="javascript:;" lay-event="edit" class="kong-btn3">处理</a>
+</script>
+<!-- 表单弹窗 -->
+<script type="text/html" id="modelUser">
+    <form id="modelUserForm" lay-filter="modelUserForm" class="layui-form model-form">
+        <input name="id" type="hidden" />
+        <div class="layui-form-item layui-row">
+            <div class="layui-inline layui-col-md12">
+                <label class="layui-form-label">处理备注:</label>
+                <div class="layui-input-block">
+                    <textarea name="processRemark" placeholder="请输入处理备注" class="layui-textarea"
+                              lay-verType="tips"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closePageDialog">取消</button>
+            <button class="layui-btn" lay-filter="modelSubmitUser" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+<script>
+    layui.use(['admin', 'layer', 'form', 'table', 'laydate', 'upload'], function () {
+        var $ = layui.jquery;
+        var admin = layui.admin;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var upload = layui.upload;
+
+        /* 渲染表格 */
+        var insTb = table.render({
+            elem: '#tbTable',
+            url: '/api/Product/getintention',
+            page: true,
+            cellMinWidth: 100,
+            cols: [[
+                { type: 'checkbox' },
+                { field: 'name', title: '客户姓名', width: '7%', align: 'center' },
+                { field: 'contactDetails', title: '联系方式', width: '12%', align: 'center' },
+                { field: 'remark', title: '意见', align: 'center' },
+                { field: 'createTime', title: '意见时间', align: 'center' },
+                {
+                    field: 'processStatus', title: '处理状态', align: 'center', templet: function (d) {
+                        if (d.processStatus == 0) {
+                            return '<span style="color: #ff5722;">未处理</span>';
+                        }
+                        if (d.processStatus == 1) {
+                            return '<span style="color: #2fd012;">已处理</span>';
+                        }
+                        return '';
+                    }
+                },
+                { field: 'processRemark', title: '处理备注', align: 'center' },
+                { field: 'processTime', title: '处理时间', align: 'center' },
+                { title: '操作', toolbar: '#tbBar', align: 'center', fixed: 'right', minWidth: 100 }
+            ]]
+        });
+
+        // 搜索
+        form.on('submit(imgTbSearch)', function (data) {
+            insTb.reload({ where: data.field });
+        });
+
+        //删除所有信息
+        $("[name=DelAll]").click(function () {
+            layer.confirm('确认要删除所有意见吗?此操作不可逆!', { btn: ['确定', '取消'] }
+                , function (index) {
+                    $.ajax({
+                        url: '/api/Product/DelIntention',
+                        type: 'Delete',
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.msg(res.message);
+                            if (res.success) {
+                                setTimeout("location.reload()", 1000);
+                            }
+                        }
+                    });
+                });
+        });
+
+        ///删除选择信息
+        $("[name=DelSelect]").click(function () {
+            var checkRows = table.checkStatus('tbTable');
+            var Id = [];
+            for (i = 0; i < checkRows.data.length; i++) {
+                Id.push(checkRows.data[i].id);
+            }
+            if (checkRows.data.length <= 0) {
+                layer.msg("请选择");
+                return;
+            }
+            layer.confirm('选择了' + checkRows.data.length + '条信息,确认删除这些信息吗?', { btn: ['确定', '取消'] }
+                , function (index) {
+                    $.ajax({
+                        url: '/api/Product/DelIntentionById',
+                        type: 'Delete',
+                        data: JSON.stringify(Id),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.msg(res.message);
+                            if (res.success) {
+                                setTimeout("location.reload()", 1000);
+                            }
+                        }
+                    });
+                });
+
+        });
+
+        table.on('tool(tbTable)', function (obj) {
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'edit') { //编辑
+                admin.open({
+                    type: 1,
+                    area: ["900px"],
+                    title: '处理意见',
+                    content: $('#modelUser').html(),
+                    success: function (layero, dIndex) {
+                        // 回显数据
+                        form.val('modelUserForm', data);
+                        // 表单提交事件
+                        form.on('submit(modelSubmitUser)', function (data) {
+                            layer.load(2);
+                            $.ajax({
+                                url: '/api/product/processIntention',
+                                type: 'Post',
+                                contentType: "application/json;charset=utf-8",
+                                data: JSON.stringify(data.field),
+                                async: false,
+                                dataType: 'json',
+                                success: function (result) {
+                                    layer.closeAll('loading');
+                                    if (result.code == 1) {
+                                        layer.close(dIndex);
+                                        layer.msg(result.message, { icon: 1 });
+                                        insTb.reload({}, 'data');
+                                    } else {
+                                        layer.msg(result.message, { icon: 2 });
+                                    }
+                                }
+                            });
+                            return false;
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+

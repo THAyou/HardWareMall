@@ -1,0 +1,133 @@
+﻿
+@{
+    @using HardwareMall.Tool.EnumHelper;
+    ViewData["Title"] = "新闻管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- 加载动画 -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">选择类型:</label>
+                        <div class="layui-input-inline">
+                            @Html.DropDownList("NewsType", EnumExtend.GetSelectList(typeof(NewsType), "--请选择--", "0"))
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn icon-btn" lay-filter="imgTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <a class="layui-btn icon-btn" name="Add">添加新闻</a>
+                    </div>
+                </div>
+            </div>
+            <!-- 数据表格 -->
+            <table id="tbTable" lay-filter="tbTable"></table>
+        </div>
+    </div>
+</div>
+@*表格操作*@
+<script type="text/html" id="tbBar">
+    <a href="javascript:;" lay-event="edit" class="kong-btn3">详情</a>
+    <a href="javascript:;" lay-event="del" class="kong-btn2">删除</a>
+</script>
+<script>
+    layui.use(['admin', 'layer', 'form', 'table', 'laydate', 'upload'], function () {
+        var $ = layui.jquery;
+        var admin = layui.admin;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var upload = layui.upload;
+
+        /* 渲染表格 */
+        var insTb = table.render({
+            elem: '#tbTable',
+            url: '/api/WebManage/getNewsList',
+            page: false,
+            cellMinWidth: 100,
+            cols: [[
+                {
+                    field: 'newsType', title: '新闻类型', align: 'center', templet: function (d) {
+                        if (d.newsType ==@((int)NewsType.CompanyNews)) {
+                            return '@NewsType.CompanyNews.GetDescription()';
+                        }
+                        if (d.newsType ==@((int)NewsType.IndustryNews)) {
+                            return '@NewsType.IndustryNews.GetDescription()';
+                        }
+                        return '';
+                    }
+                }, 
+                { field: 'newsTitle', title: '新闻标题', align: 'center', }, 
+                { field: 'newsDataTime', title: '新闻发布时间', align: 'center', }, 
+                { title: '操作', toolbar: '#tbBar', align: 'center', fixed: 'right', minWidth: 200 }
+            ]]
+        });
+
+        // 搜索
+        form.on('submit(imgTbSearch)', function (data) {
+            insTb.reload({ where: data.field, page: false });
+        });
+
+        //监听工具条
+        table.on('tool(tbTable)', function (obj) {
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'edit') { //编辑
+                var width = $(document.body).width();
+                width = width - 80;
+                var check = layer.open({
+                    type: 2,
+                    title: '详情',
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area: [width + 'px', '580px'],
+                    content: '/WebManage/NewsEdit?NewsId=' + data.id
+                });
+                layer.full(check);
+            }
+            if (layEvent == 'del') {
+                layer.confirm('确认要删除吗?', { btn: ['确定', '取消'] }
+                    , function (index) {
+                        $.ajax({
+                            url: '/api/WebManage/delNews',
+                            type: 'delete',
+                            data: JSON.stringify({Id:data.id}),
+                            contentType: "application/json",
+                            dataType: "json",
+                            success: function (res) {
+                                layer.msg(res.message);
+                                setTimeout("location.reload()", 1000);
+                            }
+                        });
+                    });
+            }
+        });
+
+        $("[name=Add]").click(function () {
+            var width = $(document.body).width();
+                width = width - 80;
+                var check = layer.open({
+                    type: 2,
+                    title: '新闻',
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area: [width + 'px', '580px'],
+                    content: '/WebManage/NewsEdit'
+                });
+            layer.full(check);
+        });
+    });
+</script>

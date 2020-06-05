@@ -1,0 +1,342 @@
+﻿@using HardwareMall.Model;
+@{
+    ViewData["Title"] = "Shopping Cart";
+    Layout = "~/Views/Shared/_ViewBodyLayOut.cshtml";
+    var ShopCartProList = ViewData["ShopCartProList"] as List<ShopCartProDto>;
+    var ShopStr = string.Empty;
+    ShopCartProList.ForEach(m =>
+    {
+        if (ShopStr != string.Empty)
+        {
+            ShopStr += ',';
+        }
+        ShopStr += "(" + m.PackgeName + ")";
+    });
+}
+
+<div class="Crumbs">
+    <div class="container">
+        <p>Your location：<a href="#">Home</a>&gt;<a href="#">Shopping cart</a></p>
+    </div>
+</div>
+<div class="mainBox">
+    <div class="container clearfix">
+        <div class="cartBox">
+            <h2 class="tit">Shopping cart</h2>
+            <div class="cart_th">
+                <ul class="clearfix">
+                    <li class="th_chk"><label><input type="checkbox"></label>Select all</li>
+                    <li class="th_info">Products</li>
+                    <li class="th_Spec">Specification</li>
+                    <li class="th_pack">Package</li>
+                    <li class="th_price">Unit Price</li>
+                    <li class="th_amount">Quantity</li>
+                    <li class="th_sum">Amount</li>
+                    <li class="th_op">Operate</li>
+                </ul>
+            </div>
+            @{
+                foreach (var m in ShopCartProList)
+                {
+                    <div class="cart_td">
+                        <ul class="clearfix">
+                            <li class="td_chk"><label><input type="checkbox" value="@m.GUID" PriceType="@m.PriceType" FormatId="@m.FormatId" PackageId="@m.PackageId" id="@m.ProductId" name="@m.ProductName"></label></li>
+                            <li class="td_info">
+                                <dl class="clearfix" href="/Product/ProductDetails?ProductId=@m.ProductId">
+                                    <dt><img src="@m.ProductImg" href="/Product/ProductDetails?ProductId=@m.ProductId"></dt>
+                                    <dd>
+                                        <h3><a href="/Product/ProductDetails?ProductId=@m.ProductId">@m.ProductName</a></h3>
+                                        <P>Order number：@m.ProductBill</P>
+                                        <p>Product model：@m.ProductModel</p>
+                                    </dd>
+                                </dl>
+                            </li>
+                            <li class="th_Spec">@m.FormatName</li>
+                            <li class="th_pack">@m.PackgeName</li>
+                            <li class="td_price">@(m.PriceType + m.Price!=null ? m.Price.Value.ToString("0.00"): "Price Quote" )</li>
+                            <li class="td_amount">
+                                <div class="numSelect">
+                                    <span class="cutBtn" GUID="@m.GUID">-</span>
+                                    <span class="numBtn"><input type="text" name="@m.GUID" value="@m.Quantity" maxlength="4"></span>
+                                    <span class="addBtn" GUID="@m.GUID">+</span>
+                                </div>
+                            </li>
+                            <li class="td_sum" PriceType="@m.PriceType" Price="@m.Price" Amount="@m.Amount" PNum="@m.PNum" name="Amount_@m.GUID">@(m.PriceType + (m.Amount!=null ? m.Amount.Value.ToString("0.00"):""))</li>
+                            <li class="td_op"><a href="javascript:;" id="@m.GUID">Delete</a></li>
+                        </ul>
+                    </div>
+                }
+            }
+
+            <div class="cartBtm clearfix">
+                <div class="cartBL">
+                    <label>
+                        <input type="checkbox" />All
+                    </label>
+                    <a href="javascript:;">Delete</a>
+                </div>
+                <div class="cartBR">
+                    <span>Selected<b class="cartNum">3</b>Item</span>
+                    <span>Amount：<b class="allMoney">Talk in detail</b></span>
+                    <a href="javascript:;" class="contactBtn">Contact us</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="fixBox">
+    <div class="container">
+        <div class="fixMain">
+            <form>
+                <label>
+                    <span>Products</span>
+                    <input type="text" name="ProductName" value="" />
+                </label>
+                <label>
+                    <span><sup class="red">*</sup>Name</span>
+                    <input type="text" name="ClientName" placeholder="Name" />
+                </label>
+                <label>
+                    <span><sup class="red">*</sup>Contact Number</span>
+                    <input type="text" name="ContactDetails" placeholder="Contact Number" />
+                </label>
+                <label>
+                    <span><sup class="red">*</sup>E-mail Address</span>
+                    <input type="text" name="Email" placeholder="Email" />
+                </label>
+                <label>
+                    <span>Remark</span>
+                    <textarea placeholder="Remark" name="Remark"></textarea>
+                </label>
+                <b class="red">*</b>Required
+                <div class="btnBtm">
+                    <a href="#" class="subBtn">
+                        Submit
+                    </a>
+                    <a href="#" class="cancelBtn">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<div class="mask">
+
+</div>
+<script type="text/javascript">
+    $(function () {
+        $(".cartBR .contactBtn").click(function () {
+            $("[name=ProductName]").val(GetProductNameCheck());
+            $(".mask").stop().fadeIn();
+            $(".fixBox").stop().fadeIn();
+        })
+        $(".btnBtm a").click(function () {
+            $(".mask").stop().fadeOut();
+            $(".fixBox").stop().fadeOut();
+        });
+
+        $(".subBtn").click(function () {
+            var ProductData = [];
+            var ShopId = [];
+            if (confirm("Confirm?")) {
+                $(".td_chk input[type='checkbox']").each(function (index, m) {
+                    if ($(this).is(':checked')) {
+                        ProductData.push({
+                            ProductId: $(this).attr('id'),
+                            Quantity: $("[name=" + $(this).val() + "]").val(),
+                            PackageId: $(this).attr('PackageId'),
+                            Amount: $("[name=Amount_" + $(this).val() + "]").attr('Amount'),
+                            FormatId: $(this).attr('FormatId'),
+                            AmountType: $(this).attr('PriceType')
+                        });
+                        ShopId.push($(this).val());
+                    }
+                });
+                $.ajax({
+                    url: '/api/Product/addOrder?Shop=1',
+                    type: 'Post',
+                    async: false,
+                    contentType: 'application/json;charset=utf-8',
+                    data: JSON.stringify({
+                        ClientName: $("[name=ClientName]").val(),
+                        ContactDetails: $("[name=ContactDetails]").val(),
+                        Remark: $("[name=Remark]").val(),
+                        Email: $("[name=Email]").val(),
+                        ProductInfo: ProductData,
+                        ShopId: ShopId
+                    }),
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.success) {
+                            alert("Submit successfully, our staff will contact you as soon as possible.");
+                            setTimeout("location.reload()", 700);
+                        }
+                        else {
+                            alert(res.message);
+                        }
+                    }
+                });
+            }
+        });
+        GetShopCartAmount();
+        SetCartBR();
+
+        $(".td_chk input[type='checkbox']").on("click", function () {
+            SetCartBR();
+        });
+        //全选功能
+        $(".cartBL input[type='checkbox']").on("click", function () {
+            Checkedbox(this);
+        });
+        //全选功能
+        $(".th_chk input[type='checkbox']").on("click", function () {
+            Checkedbox(this);
+        });
+        //逐条删除功能
+        $(".td_op a ").click(function () {
+            var Guid = $(this).attr('id');
+            if (confirm("Confirm?")) {
+                $.ajax({
+                    url: '/api/Product/deleteShop',
+                    type: 'Delete',
+                    async: false,
+                    contentType: 'application/json;charset=utf-8',
+                    data: JSON.stringify({
+                        Guid: Guid
+                    }),
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.success) {
+                            alert("Success");
+                            location.reload();
+                        }
+                        else {
+                            alert(res.message);
+                        }
+                    }
+                });
+            }
+        });
+        //勾选删除
+        $(".cartBL a").click(function () {
+            var Guids = [];
+            $("input[type='checkbox']").each(function (i, m) {
+                var IsCheck = $(this).is(':checked')
+                if (IsCheck) {
+                    Guids.push({ Guid: $(this).val() });
+                }
+            });
+            if (confirm("Confirm?")) {
+                $.ajax({
+                    url: '/api/Product/deleteShops',
+                    type: 'Delete',
+                    async: false,
+                    contentType: 'application/json;charset=utf-8',
+                    data: JSON.stringify(Guids),
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.success) {
+                            alert("Success");
+                            location.reload();
+                        }
+                        else {
+                            alert(res.message);
+                        }
+                    }
+                });
+            }
+
+        });
+
+        $(".addBtn").click(function () {
+            var Guid = $(this).attr('GUID');
+            var OldNum = parseInt($("[name="+Guid+"]").val());
+            OldNum++;
+            $("[name=" + Guid + "]").val(OldNum);
+            GetProAmount(Guid, OldNum);
+        });
+        $(".cutBtn").click(function () {
+            var Guid = $(this).attr('GUID');
+            var OldNum = parseInt($("[name="+Guid+"]").val());
+            OldNum--;
+            if (OldNum >= 1) {
+                $("[name="+Guid+"]").val(OldNum);
+                GetProAmount(Guid, OldNum);
+            }
+        });
+    })
+
+    //全选功能
+    function Checkedbox(obj) {
+        $("input[type='checkbox']").each(function (i, m) {
+            var IsCheck = $(obj).is(':checked')
+            $(this).prop("checked", IsCheck);
+        });
+        SetCartBR();
+        GetShopCartAmount()
+    }
+
+    //修改选中件数
+    function SetCartBR() {
+        var i = 0;
+        $(".td_chk input[type='checkbox']").each(function (index, m) {
+            var IsCheck = $(this).is(':checked')
+            if (IsCheck) {
+                i++;
+            }
+        });
+        $(".cartNum").text(i);
+        GetShopCartAmount();
+    }
+
+    //计算单品总金额
+    function GetProAmount(GUID,Num)
+    {
+        var PNum = parseInt($("[name=Amount_" + GUID + "]").attr('PNum'));
+        var Price = parseFloat($("[name=Amount_" + GUID + "]").attr('Price'));
+        var PriceType = $("[name=Amount_" + GUID + "]").attr('PriceType');
+        var PriceStr = (Num * PNum * Price).toFixed(2);
+        $("[name=Amount_" + GUID + "]").text(PriceType + PriceStr);
+        $("[name=Amount_" + GUID + "]").attr('Amount', PriceStr);
+        GetShopCartAmount();
+    }
+
+    function GetProductNameCheck() {
+        var Str = '';
+        $(".td_chk input[type='checkbox']").each(function (index, m) {
+            var IsCheck = $(this).is(':checked')
+            if (IsCheck) {
+                if (Str != '') {
+                    Str += ',';
+                }
+                Str += "("+$(this).attr("name")+")";
+            }
+        });
+        return Str;
+    }
+
+    //计算购物车商品总金额
+    function GetShopCartAmount() {
+        var Amount = 0;
+        var isPrice = true;
+        $(".td_sum").each(function (i, e) {
+            if (!isNaN($(this).attr("Amount"))) {
+                var thisAmount = parseFloat($(this).attr("Amount"));
+                Amount = Amount + thisAmount;
+            }
+            else {
+                isPrice = false;
+            }
+        });
+        if (isPrice) {
+            $(".allMoney").text("AED" + Amount.toFixed(2));
+        }
+        else {
+            $("#contactBtn").css({ 'background-color': 'gray' });
+            $("#contactBtn").attr('disabled', "disabled");
+        }
+    }
+</script>

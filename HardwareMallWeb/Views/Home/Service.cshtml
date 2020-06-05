@@ -1,0 +1,34 @@
+﻿
+@{
+    ViewData["Title"] = "技术服务";
+    Layout = "~/Views/Shared/_ViewBodyLayOut.cshtml";
+    var Info = ViewData["Service"] as List<HardwareMall.Model.OtherDto>;
+}
+<div class="Crumbs">
+    <div class="container">
+        <p>您现在所在的位置：<a href="/">首页</a>&gt;<a href="#">服务</a></p>
+    </div>
+</div>
+<div class="mainBox">
+    <div class="container clearfix">
+        <div class="mainL hidden-xs">
+            <ul>
+                <li><a href="/"><i class="iconfont">&#xe603;</i>首页</a></li>
+                <li><a href="/Product/ProductList"><i class="iconfont">&#xe64f;</i>产品目录</a></li>
+                <li><a href="/Home/Brand"><i class="iconfont">&#xe65a;</i>合作品牌</a></li>
+                <li class="active"><a href="/Home/Service"><i class="iconfont">&#xe607;</i>技术服务</a></li>
+                <li><a href="/Home/Company"><i class="iconfont">&#xe612;</i>公司介绍</a></li>
+                <li><a href="/Home/Job"><i class="iconfont">&#xe645;</i>人才招聘</a></li>
+                <li><a href="/Home/Contact"><i class="iconfont">&#xe622;</i>联系方式</a></li>
+                <li><a href="/Home/News"><i class="iconfont">&#xe610;</i>新闻中心</a></li>
+            </ul>
+        </div>
+        <div class="mainR">
+            @foreach (var m in Info)
+            {
+                @Html.Raw(m.Content);
+            }
+        </div>
+    </div>
+</div>
+<script></script>

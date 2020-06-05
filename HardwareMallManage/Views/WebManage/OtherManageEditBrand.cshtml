@@ -1,0 +1,384 @@
+﻿
+@{
+    @using HardwareMall.Tool;
+    ViewData["Title"] = "OtherManageEditBrand";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Id = ViewData["Id"] as string;
+}
+<!-- 加载动画 -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- 正文开始 -->
+<form class="layui-form" id="formAdvForm" lay-filter="formAdvForm">
+    <input name="Id" type="hidden" value="@Id" />
+
+    <div class="layui-fluid" style="padding-bottom: 75px;">
+        <div class="layui-card">
+            <div class="layui-card-header">内容信息</div>
+            <div class="layui-card-body">
+                <input name="type" type="hidden" />
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">标题:</label>
+                        <div class="layui-input-block">
+                            <input name="title" placeholder="请输入标题" class="layui-input"
+                                   lay-verType="tips" />
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">标题图片:</label>
+                        <div class="layui-input-block">
+                            <button id="file-btn-upload" class="layui-btn layui-btn-sm layui-btn-normal icon-btn" type="button">
+                                <i class="layui-icon">&#xe681;</i>上传文件
+                            </button>
+                            <div class="fileMain">
+
+                            </div>
+                            <input type="hidden" name="imgSrc" />
+                            <div class="fileBox">
+                                <div class="imgBox" style="width:100px;height:100px">
+                                    <img id="TImg" class="tdImg" tb-img style="cursor: zoom-in" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md10">
+                        <label class="layui-form-label layui-form-required">内容:</label>
+                        <div class="layui-input-block">
+                            <textarea name="content" placeholder="请输入内容" cols="30" rows="10" class="layui-textarea"
+                                      lay-verType="tips" style="height:400px"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">国际大牌滚动图片</div>
+            <div class="layui-card-body">
+                <div class="layui-form toolbar">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <a class="layui-btn icon-btn" name="AddImg">添加国际大牌图片</a>
+                        </div>
+                    </div>
+                </div>
+                <table id="ImgList" lay-filter="ImgList"></table>
+            </div>
+        </div>
+
+        <div class="layui-card">
+            <div class="layui-card-header">国货精品滚动图片</div>
+            <div class="layui-card-body">
+                <div class="layui-form toolbar">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <a class="layui-btn icon-btn" name="AddImg2">添加国货精品图片</a>
+                        </div>
+                    </div>
+                </div>
+                <table id="ImgList2" lay-filter="ImgList2"></table>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group-bottom text-right">
+        <button type="reset" class="layui-btn layui-btn-primary">&emsp;重置&emsp;</button>
+        <a class="layui-btn" lay-filter="formAdvSubmit" lay-submit>&emsp;保存&emsp;</a>
+    </div>
+
+</form>
+<script type="text/html" id="Operating">
+    <a href="javascript:;" lay-event="del" class="kong-btn2">删除</a>
+</script>
+<script type="text/html" id="Imgbox">
+    <div class="fileBox">
+        <div class="imgBox" style="width:30px;height:30px">
+            <img src="@StaticString.ImgServerUrl{{d.imgSrc}}" class="tdImg" tb-img style="cursor: zoom-in" />
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="modelAuth">
+    <form id="modelAuthForm" lay-filter="modelAuthForm" class="layui-form model-form">
+        <input type="hidden" name="id" />
+        <div class="layui-form-item">
+            <label class="layui-form-label">图片：</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="attachment" />
+                <button id="file-btn-upload2" class="layui-btn layui-btn-sm layui-btn-normal icon-btn" type="button">
+                    <i class="layui-icon">&#xe681;</i>上传图片
+                </button>
+                <div class="fileMain">
+
+                </div>
+                <input type="hidden" name="imgSrc" />
+                <div class="fileBox">
+                    <div class="imgBox" style="width:100px;height:100px">
+                        <img id="BImg" class="tdImg" tb-img style="cursor: zoom-in" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closePageDialog">取消</button>
+            <button class="layui-btn" lay-filter="modelSubmitAuth" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/javascript">
+    layui.use(['admin','layer', 'form', 'table', 'laydate','upload'], function () {
+        var $ = layui.jquery;
+        var admin = layui.admin;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var upload = layui.upload;
+        var Id = $("[name=Id]").val();
+        var ImgServer = "@StaticString.ImgServerUrl";
+        var ImgIds = '';
+        var ImgIds2 = '';
+         //页面加载
+        if (Id != "0") {
+            $.ajax({
+                url: '/api/WebManage/getOtherConfigInfo?Id=' + Id,
+                type: 'get',
+                async: false,
+                success: function (data) {
+                    var Info = data.data;
+                    ImgIds = Info.imgIds;
+                    ImgIds2 = Info.imgIds2;
+                    $("#TImg").attr("src", ImgServer + Info.imgSrc);
+                    form.val("formAdvForm", Info);
+                }
+            });
+        };
+        upload.render({
+            elem: '#file-btn-upload',//绑定元素
+            url: '/api/UploadFiles/upLoadImg?Path=OtherImg', //必填项
+            method: 'POST',  //可选项。HTTP类型，默认post
+            accept: 'file',
+            done: function (res, index, upload) { //每个文件提交一次触发一次。详见“请求成功的回调”
+                if (res.success) {
+                    $("#TImg").attr("src", ImgServer + res.data);
+                    $("[name=imgSrc]").val(res.data);
+                }
+            }
+        });
+
+       /* 渲染图片表格 */
+        table.render({
+            elem: '#ImgList',
+            url: '/api/WebManage/getOtherImgs',
+            method: 'Post',
+            where: { ImgIds: ImgIds },
+            contentType:'application/json',
+            page: false,
+            cellMinWidth: 100,
+            cols: [[
+                { field: 'Img', toolbar: '#Imgbox', title: '产品图片' },
+                { title: '操作', toolbar: '#Operating', align: 'center', minWidth: 200 }
+            ]]
+        });
+
+        /* 渲染图片表格 */
+        table.render({
+            elem: '#ImgList2',
+            url:'/api/WebManage/getOtherImgs',
+            page: false,
+            method: 'Post',
+            where: { ImgIds: ImgIds2 },
+            contentType:'application/json',
+            cellMinWidth: 100,
+            cols: [[
+                { field: 'Img', toolbar: '#Imgbox', title: '产品图片' },
+                { title: '操作', toolbar: '#Operating', align: 'center', minWidth: 200 }
+            ]]
+        });
+
+        //页面加载
+        if (Id!="0") {
+            $.get('/api/WebManage/getOtherConfigInfo?Id=' + Id, {
+
+            }, function (data) {
+                    var Info = data.data;
+                    $("#TImg").attr("src", ImgServer + Info.imgSrc);
+                    form.val("formAdvForm", Info);
+            }, 'json');
+        };
+        /* 点击图片放大 */
+        $(document).off('click.tbImg').on('click.tbImg', '[tb-img]', function () {
+            layer.photos({photos: {data: [{src: $(this).attr('src')}]}, shade: .1, closeBtn: true});
+        });
+
+        /* 监听表单提交 */
+        form.on('submit(formAdvSubmit)', function (data) {
+            var FromData = data.field;
+            layer.confirm('确认要保存吗?', { btn: ['确定', '取消'] }
+                , function (index) {
+                    $.ajax({
+                        url: '/api/WebManage/saveOtherConfig',
+                        type: 'put',
+                        data: JSON.stringify(FromData),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (res) {
+                            layer.msg(res.message);
+                            if (res.success) {
+                                setTimeout("location.reload()", 1000);
+                            }
+                        }
+                    });
+                });
+        });
+
+        //添加图片
+        $("[name=AddImg]").click(function () {
+            admin.open({
+                type: 1,
+                title: '添加国际大牌图片',
+                content: $('#modelAuth').html(),
+                success: function (layero, dIndex) {
+                    upload.render({
+                        elem: '#file-btn-upload2',//绑定元素
+                        url: '/api/UploadFiles/upLoadImg?Path=OtherImg', //必填项
+                        method: 'POST',  //可选项。HTTP类型，默认post
+                        accept: 'file',
+                        done: function (res, index, upload) { //每个文件提交一次触发一次。详见“请求成功的回调”
+                            if (res.success) {
+                                $("#BImg").attr("src", ImgServer + res.data);
+                                $("[name=imgSrc]").val(res.data);
+                            }
+                        }
+                    });
+                    // 表单提交事件
+                    form.on('submit(modelSubmitAuth)', function (data) {
+                        var req = {
+                            Id:$("[name=Id]").val(),
+                            ImgSrc:data.field.imgSrc,
+                            Type:"1"
+                        }
+                        $.ajax({
+                            url: '/api/WebManage/addBrandImg',
+                            type: 'put',
+                            contentType: "application/json;charset=utf-8",
+                            data: JSON.stringify(req),
+                            dataType: "json",
+                            success: function (res) {
+                                if (res.success) {
+                                    layer.msg(res.message, { icon: 1 });
+                                } else {
+                                    layer.msg(res.message, { icon: 2 });
+                                }
+                                setTimeout("location.reload();layer.close(" + dIndex + ");", 1000);
+                            }
+                        });
+                        return false;
+                    });
+                }
+            });
+        });
+
+       //添加图片
+        $("[name=AddImg2]").click(function () {
+            admin.open({
+                type: 1,
+                title: '添加国际大牌图片',
+                content: $('#modelAuth').html(),
+                success: function (layero, dIndex) {
+                    upload.render({
+                        elem: '#file-btn-upload2',//绑定元素
+                        url: '/api/UploadFiles/upLoadImg?Path=OtherImg', //必填项
+                        method: 'POST',  //可选项。HTTP类型，默认post
+                        accept: 'file',
+                        done: function (res, index, upload) { //每个文件提交一次触发一次。详见“请求成功的回调”
+                            if (res.success) {
+                                $("#BImg").attr("src", ImgServer + res.data);
+                                $("[name=imgSrc]").val(res.data);
+                            }
+                        }
+                    });
+                    // 表单提交事件
+                    form.on('submit(modelSubmitAuth)', function (data) {
+                        var req = {
+                            Id:$("[name=Id]").val(),
+                            ImgSrc:data.field.imgSrc,
+                            Type:"2"
+                        }
+                        $.ajax({
+                            url: '/api/WebManage/addBrandImg',
+                            type: 'put',
+                            contentType: "application/json;charset=utf-8",
+                            data: JSON.stringify(req),
+                            dataType: "json",
+                            success: function (res) {
+                                if (res.success) {
+                                    layer.msg(res.message, { icon: 1 });
+                                } else {
+                                    layer.msg(res.message, { icon: 2 });
+                                }
+                                setTimeout("location.reload();layer.close(" + dIndex + ");", 1000);
+                            }
+                        });
+                        return false;
+                    });
+                }
+            });
+        });
+
+                        //监听工具条
+        table.on('tool(ImgList)', function (obj) {
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent == 'del') {//删除
+                layer.confirm('确认要删除图片吗?', { btn: ['确定', '取消'] }
+                    , function (index) {
+                        $.ajax({
+                            url: '/api/WebManage/delBrandImg',
+                            type: 'Put',
+                            data: JSON.stringify({ Id: $("[name=Id]").val(), ImgId: data.id,Type:"1" }),
+                            contentType: "application/json;charset=utf-8",
+                            dataType: "json",
+                            success: function (res) {
+                                layer.msg(res.message);
+                                if (res.success) {
+                                    setTimeout("location.reload()", 1000);
+                                }
+                            }
+                        });
+                    });
+            }
+        });
+
+                //监听工具条
+        table.on('tool(ImgList2)', function (obj) {
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent == 'del') {//删除
+                layer.confirm('确认要删除图片吗?', { btn: ['确定', '取消'] }
+                    , function (index) {
+                        $.ajax({
+                            url: '/api/WebManage/delBrandImg',
+                            type: 'Put',
+                            data: JSON.stringify({ Id: $("[name=Id]").val(), ImgId: data.id,Type:"2" }),
+                            contentType: "application/json;charset=utf-8",
+                            dataType: "json",
+                            success: function (res) {
+                                layer.msg(res.message);
+                                if (res.success) {
+                                    setTimeout("location.reload()", 1000);
+                                }
+                            }
+                        });
+                    });
+            }
+        });
+
+    });
+</script>
+

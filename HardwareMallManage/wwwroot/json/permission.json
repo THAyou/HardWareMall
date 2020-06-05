@@ -1,0 +1,49 @@
+{
+  "pageIndex": 1,
+  "pageCount": 6,
+  "pageSize": 20,
+  "data": [
+    {
+      "code": "2",
+      "permissionName": "system manage",
+      "description": null,
+      "url": "",
+      "permissionType": "menu",
+      "displayOrder": 1,
+      "parentCode": "",
+      "depth": 0,
+      "styleClass": "",
+      "status": 0,
+      "sid": 1
+    },
+    {
+      "code": "3",
+      "permissionName": "code manage",
+      "description": null,
+      "url": "",
+      "permissionType": "menu",
+      "displayOrder": 1,
+      "parentCode": "2",
+      "depth": 1,
+      "styleClass": "",
+      "status": 0,
+      "sid": 2
+    },
+    {
+      "code": "4",
+      "permissionName": "view",
+      "description": null,
+      "url": "",
+      "permissionType": "button",
+      "displayOrder": 1,
+      "parentCode": "3",
+      "depth": 2,
+      "styleClass": "",
+      "status": 0,
+      "sid": 3
+    }
+  ],
+  "code": 0,
+  "msg": "",
+  "count": 3
+}

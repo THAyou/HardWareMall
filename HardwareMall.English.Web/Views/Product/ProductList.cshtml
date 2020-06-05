@@ -1,0 +1,318 @@
+﻿
+@{
+    @using Model.HardwareMall;
+    @using HardwareMall.Cache;
+    ViewData["Title"] = "Products";
+    Layout = "~/Views/Shared/_ViewBodyLayOut.cshtml";
+    List<ModW_ProductType> TypeList = CacheStaticObj.ProductTypeList;
+    List<ModW_ProductType> ProTypeList = TypeList.Where(m => m.ParentId == 0).ToList();
+    var ProTypeInfo = ViewData["ProTypeInfo"] as ModW_ProductType;
+    var ProductName = ViewBag.ProductName as string;
+    var ProBigTypeId = ViewData["ProBigTypeId"] as int?;
+    var ReId = ViewData["ReId"] as string;
+    var pageIndex = ViewData["page"] as string;
+}
+<input type="hidden" name="ProductName" value="@ProductName" />
+<div class="Crumbs">
+    <div class="container">
+        <p>
+            Your location：<a href="/">Home</a>&gt;<a href="/Product/ProductList">Products</a>
+            @{
+                if (ProTypeInfo != null)
+                {
+                    <label>&gt;</label><a href="/Product/ProductList?ProTypeId=@ProTypeInfo.Id">@ProTypeInfo.TypeName</a>
+                }
+            }
+</div>
+</div>
+<div class="proMianBox">
+    <div class="container clearfix">
+        <div class="proL hidden-xs">
+            <ul>
+                @{
+                    var BigInfo = new ModW_ProductType();
+                    var BigInfos = TypeList.Where(m => m.Id == ProBigTypeId).ToList();
+                    if (BigInfos.Count > 0)
+                    {
+                        BigInfo = BigInfos[0];
+                    }
+                    else
+                    {
+                        BigInfo.Id = 0;
+                        BigInfo.TypeName = "Products";
+                    }
+                    var Infos = TypeList.Where(m => m.ParentId == ProBigTypeId).ToList();
+
+                    <li class="active">
+                        <h3>@BigInfo.TypeName</h3>
+                        <div class="hProMenu" style="display: block;">
+                            @foreach (var m in Infos)
+                            {
+                                if (ProBigTypeId == 0)
+                                {
+                                    <h4><a href="/Product/ProductList?ProBigTypeId=@m.Id" title="@(m.TypeName)">@(m.TypeName)</a></h4>
+                                }
+                                else
+                                {
+                                    <h4><a href="/Product/ProductList?ProBigTypeId=@ProBigTypeId&ProTypeId=@m.Id" title="@(m.TypeName)">@(m.TypeName)</a></h4>
+                                }
+                            }
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="proR">
+            @*筛选处*@
+            <div class="proRTop ">
+                <div class="proSelect clearfix">
+                    @{
+                        if (ProBigTypeId != 0&&ProTypeInfo!=null)
+                        {
+                            foreach (var m in TypeList.Where(m => m.ParentId == ProTypeInfo.Id).ToList())
+                            {
+                                <div class="facet">
+                                    <h2>@m.TypeName<i class="iconfont">&#xe69d;</i></h2>
+                                    <div class="h_select">
+                                        <ul>
+                                            <li><input type="checkbox" name="wheel" value="全部">全部</li>
+                                            @foreach (var n in TypeList.Where(l => l.ParentId == m.Id).ToList())
+                                            {
+                                                <li><input type="checkbox" class="TypeCheck" id="@n.Id" name="wheel" value="@n.TypeName">@n.TypeName</li>
+                                            }
+                                        </ul>
+                                        <a href="javascript:;" class="subBtn">Confirm</a>
+                                    </div>
+                                </div>
+                            }
+
+                        }
+                    }
+                </div>
+                <div class="proCheBox">
+                    <em>Filter：</em>
+                </div>
+            </div>
+            @*展示处*@
+            <div class="proRBtm" id="ProList">
+                
+            </div>
+            @*分页工具*@
+            <div class="pagination" id="PageTool">
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<script>
+    var limit = 9;
+    var TypeIDArray = [];
+    var GetTypeId =@(ProTypeInfo ==null ? 0:ProTypeInfo.Id);
+    var ReId=@ReId;
+    $(function () {
+        GetPageList(@pageIndex);
+        $(".searBox input[type='search']").val($("[name=ProductName]").val());
+        $(".proL li h3").click(function () {
+            $(this).siblings(".hProMenu").stop().slideToggle();
+            $(this).parents("li").siblings().find(".hProMenu").stop().slideUp();
+            $(this).parents("li").addClass("active");
+            $(this).parents("li").siblings().removeClass("active");
+        })
+
+        $(".facet h2").click(function () {
+            $(this).siblings(".h_select").stop().fadeToggle();
+            $(this).parents(".facet").siblings().find(".h_select").stop().fadeOut();
+        })
+        $(".h_select .subBtn").click(function () {
+            $(".h_select").stop().fadeOut();
+        });
+        $(".TypeCheck").on('click', function () {
+            CheckWhere();
+        });
+    });
+
+    //减少筛选元素
+    function RemoveThis(obj, id) {
+        $(obj).remove();
+        $("#" + id).prop("checked", false);
+        TypeIDArray.splice(TypeIDArray.indexOf(id),1);
+        GetPageList(@pageIndex);
+    }
+    //生成筛选元素
+    function CheckWhere() {
+        $(".TypeCheck").each(function () {
+            var id = $(this).attr('id');
+            if ($(this).is(':checked')) {
+                if (!IsInArray(TypeIDArray, id)) {
+                    TypeIDArray.push(id);
+                }
+                if ($('#a_' + id + '').length <= 0) {
+                    var Html = '<a href="javascript:;" id="a_' + id + '" onclick="RemoveThis(this,' + id + ')" class="cheBtn">' + $(this).val() + ' <i class="iconfont">&#xe636;</i></a>';
+                    $(".proCheBox").append(Html);
+                }
+            }
+            else {
+                if (IsInArray(TypeIDArray, id)) {
+                    TypeIDArray.splice(TypeIDArray.indexOf(id),1);
+                }
+                if ($('#a_' + id + '').length > 0) {
+                        $('#a_' + id + '').remove();
+                    }
+            }
+        });
+        GetPageList(@pageIndex);
+    }
+
+    //生成分页工具栏
+    function GetPageToolHtml(PageIndex,PageCount,ViewNum) {
+        var HtmlStr = '<ol class="cl">';
+        if (PageIndex - 1 > 0) {
+            HtmlStr += '<li><a href="' + GetPageParam((PageIndex - 1)) +'" >Pre</a></li>';
+            HtmlStr += '<li><a href="' + GetPageParam(1) +'" >Home</a></li>';
+        }
+        if (PageIndex > ViewNum) {
+            HtmlStr += '<li><span>.....</span></li>';
+        }
+        for (i = 1; i <= PageCount; i++) {
+            if ((PageIndex - ViewNum < i) && (PageIndex + ViewNum > i)) {
+                if (i == PageIndex) {
+                    HtmlStr += '<li><a href="' + GetPageParam(i)+'" class="active">' + i + '</a></li>';
+                }
+                else {
+                    HtmlStr += '<li><a href="' + GetPageParam(i) +'">' + i + '</a></li>';
+                }
+            }
+        }
+        if (PageIndex <= PageCount - ViewNum) {
+            HtmlStr += '<li><span>.....</span></li>';
+        }
+        if (PageIndex + 1 <= PageCount) {
+            HtmlStr += '<li><a href="' + GetPageParam(PageCount) +'" >End</a></li>';
+            HtmlStr += '<li><a href="' + GetPageParam(PageIndex + 1) +'" > Next</a></li>';
+        }
+        HtmlStr += '<li><span>Total:13</span>,<span>To</span></li>';
+        HtmlStr += '<li><input oninput ="value=value.replace(/[^\\d]/g,\'\')" type="text" id="PageInput" value="' + PageIndex + '">Page</li>';
+        HtmlStr += '<li><a href="javascript:GetPageInput()">Go</a></li>';
+        HtmlStr += '</ol>';
+        $("#PageTool").html(HtmlStr);
+    }
+
+    //获取跳转页
+    function GetPageInput() {
+        var href = GetPageParam($("#PageInput").val());
+        this.location.href = href;
+    }
+    //渲染产品Html
+    function ProViewHtml(ProList) {
+        var HtmlStr = '<ul class="proUl clearfix">';
+        //循环生成Html
+        ProList.forEach(function (m, i) {
+            var Price = m.titlePrice;
+            var Pricestr = "";
+            var PriceB = "0";
+            var PriceS = "00";
+            if (Price != null) {
+                Pricestr = m.titlePrice.toFixed(2);
+                PriceB = Pricestr.split(".")[0];
+                PriceS = Pricestr.split(".")[1];
+                PriceB+="."
+            }
+            else {
+                PriceB = "Price Quote";
+                PriceS = "";
+            }
+            HtmlStr += ' <li>\
+                        <a target="_blank" href="/Product/ProductDetails?ProductId='+ m.id + '" title="' + m.productName + '">\
+                            <div class="imgBox">\
+                                <img src="'+ m.img + '" />\
+                            </div>\
+                        </a>\
+                        <div class="txtBox">\
+                            <h3 class="price">\
+                                <em>'+ m.priceType + '</em>\
+                                <b>'+ PriceB + '</b>\
+                                <em>'+ PriceS + '</em>\
+                            </h3>\
+                            <p title="'+ m.productName + '">' + m.productName + '</p>\
+                        </div>\
+                    </li>';
+        });
+
+        HtmlStr += '</ul>';
+        $("#ProList").html(HtmlStr);
+
+    }
+    //获取产品数据
+    function GetPageList(page) {
+        var data = {};
+        var ProductName = $("[name=ProductName]").val();
+        var BigTypeId = @(ProBigTypeId);
+        if (TypeIDArray.length > 0) {
+            data = { page: page, limit: limit, TypeIDArray: TypeIDArray,GetTypeId:GetTypeId,ProductName:ProductName,BigTypeId:BigTypeId,ReId:ReId };
+        }
+        else {
+            data = { page: page, limit: limit, GetTypeId: GetTypeId, ProductName: ProductName, BigTypeId: BigTypeId, ReId:ReId };
+        }
+        $.ajax({
+            url: '/api/Product/getProductPageList',
+            type: 'Post',
+            async: false,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            dataType: "json",
+            success: function (res) {
+                if (res.success) {
+                    ProViewHtml(res.data.data);
+                    GetPageToolHtml(res.data.pageIndex, res.data.pageCount, 4);
+                }
+            }
+        });
+    }
+
+
+    //判断数组是否存在值
+    function IsInArray(Array, value) {
+        var result = false;
+        for (i = 0; i < Array.length; i++) {
+            if (Array[i] == value) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) { return pair[1]; }
+        }
+        return (false);
+    }
+
+    function replaceParamVal(paramName, replaceWith) {
+        var oUrl = this.location.href.toString();
+        var re = eval('/(' + paramName + '=)([^&]*)/gi');
+        var nUrl = oUrl.replace(re, paramName + '=' + replaceWith);
+        return nUrl;
+    }
+
+    function GetPageParam(page) {
+        var url = location.href.split("?")[0];
+        var urlsearch = location.search;
+        if (urlsearch != null && urlsearch != "") {
+            if (!getQueryVariable("page")) {
+                url = url + urlsearch + "&page=" + page;
+            }
+            else {  
+                url = replaceParamVal("page", page);
+            }
+        }
+        else {
+            url = url + "?page=" + page;
+        }
+        return url;
+    }
+</script>
